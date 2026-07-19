@@ -43,7 +43,7 @@ if [[ -f "$FILTER_URLS" ]]; then
         [[ -z "$url" || "$url" =~ ^[[:space:]]*# ]] && continue
         url=$(echo "$url" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
         temp_dl="$TEMP_DIR/filter_dl_$(date +%s%N).tmp"
-        if curl -s -L --compressed -A "Mozilla/5.0" --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 2 "$url" -o "$temp_dl" 2>/dev/null; then
+        if curl -s -L --compressed -A "Mozilla/5.0" --connect-timeout 10 --max-time 60 --retry 10 --retry-delay 3 "$url" -o "$temp_dl" 2>/dev/null; then
             if [[ "$url" == *.gz ]] || file "$temp_dl" | grep -qi "gzip"; then
                 gzip -dc "$temp_dl" >> "$TEMP_DIR/remove-hosts-raw.txt" 2>/dev/null
             else
@@ -101,7 +101,7 @@ process_list() {
             log_msg "📥 Скачивание ($list_name): $url"
             local temp_dl="$TEMP_DIR/dl_$(date +%s%N).tmp"
             if curl -s -L --fail --compressed -A "Mozilla/5.0" \
-               --connect-timeout 10 --max-time 60 --retry 5 --retry-delay 2 \
+               --connect-timeout 10 --max-time 60 --retry 10 --retry-delay 3 \
                "$url" -o "$temp_dl" 2>/dev/null; then
                 grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}(/[0-9]{1,2})?' "$temp_dl" >> "$temp_ipv4" 2>/dev/null
                 grep -Eio '([0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}(/[0-9]{1,3})?' "$temp_dl" >> "$temp_ipv6" 2>/dev/null
@@ -113,7 +113,7 @@ process_list() {
             else
                 log_msg "${RED}✗${NC} Ошибка скачивания: $url"
             fi
-            sleep 2
+            sleep 5
         done < "$urls_file"
     fi
     

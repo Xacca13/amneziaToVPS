@@ -18,7 +18,13 @@ dnf config-manager --set-enabled crb
 log "🌐 Настройка DNS (исправление медленного резолвинга)..."
 chattr -i /etc/resolv.conf 2>/dev/null || true
 cat > /etc/resolv.conf << 'EOF'
-nameserver 8.8.8.8
+nameserver 9.9.9.10
+nameserver 76.76.2.0
+nameserver 194.169.169.169
+nameserver 64.6.64.6
+nameserver 64.6.65.6
+nameserver 101.226.4.6
+nameserver 193.58.251.251
 nameserver 1.1.1.1
 options timeout:1 attempts:1 rotate inet4
 EOF

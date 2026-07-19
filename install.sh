@@ -2,9 +2,6 @@
 # ==============================================================================
 # 🚀 AmneziaWG Gateway — Интерактивный установщик
 # ==============================================================================
-# Использование:
-#   curl -sSL https://raw.githubusercontent.com/Xacca13/amnezia-gateway/main/install.sh | bash
-# ==============================================================================
 
 set -e
 
@@ -129,6 +126,23 @@ select_local_servers() {
     log_success "Split: $INSTALL_SPLIT | Full: $INSTALL_FULL"
 }
 
+select_clients_count() {
+    echo -e "\n${BOLD}${CYAN}👥 ШАГ 2.1. Количество клиентских конфигов:${NC}"
+    echo -e "${YELLOW}💡 Сколько конфигураций клиентов сгенерировать для выбранных серверов?${NC}"
+    read -p "$(echo -e ${CYAN}Введите число (по умолчанию 5, макс. 50):${NC} )" INPUT_COUNT
+    
+    # Валидация ввода
+    if [[ -z "$INPUT_COUNT" ]]; then
+        CLIENT_COUNT=5
+    elif [[ "$INPUT_COUNT" =~ ^[0-9]+$ ]] && [[ "$INPUT_COUNT" -ge 1 ]] && [[ "$INPUT_COUNT" -le 50 ]]; then
+        CLIENT_COUNT=$INPUT_COUNT
+    else
+        log_warning "Неверный ввод. Будет использовано значение по умолчанию: 5"
+        CLIENT_COUNT=5
+    fi
+    log_success "Будет сгенерировано клиентских конфигов: $CLIENT_COUNT"
+}
+
 select_optional() {
     echo -e "\n${BOLD}${CYAN}🧩 ШАГ 3. Опциональные компоненты:${NC}"
     read -p "$(echo -e ${CYAN}🧠 Установить Smart Update (автообновление списков)? [y/n]:${NC} )" OPT_SMART
@@ -141,9 +155,6 @@ select_optional() {
     log_success "Smart Update: $INSTALL_SMART | AdGuard: $INSTALL_ADGUARD | Zapret: $INSTALL_ZAPRET"
 }
 
-# ==============================================================================
-# НОВАЯ ФУНКЦИЯ: Динамическое меню выбора URL из файлов репозитория
-# ==============================================================================
 present_url_menu() {
     local list_file="$1"
     local output_file="$2"
@@ -292,6 +303,7 @@ main() {
     select_mode
     get_public_ip
     select_local_servers
+    select_clients_count
     select_optional
     select_urls_interactive
     setup_cascade_config

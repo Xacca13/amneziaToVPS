@@ -25,8 +25,8 @@ PostUp = iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j MASQUERADE
 PostDown = iptables -t nat -D POSTROUTING -s 10.8.0.0/24 -j MASQUERADE
 EOF
 
-log "👥 Генерация 10 клиентских конфигов..."
-for i in $(seq 1 10); do
+log "👥 Генерация $CLIENT_COUNT клиентских конфигов..."
+for i in $(seq 1 "$CLIENT_COUNT"); do
     CLIENT_NUM=$(printf "%02d" $i)
     CLIENT_IP="10.8.0.$((i + 1))"
     CLIENT_PRIV=$(awg genkey)
