@@ -173,7 +173,7 @@ amnezia-gateway/
 │   └── 10-aliases.sh             # Алиасы
 ├── configs/urls/                 # Сборник ссылок на домены, адреса IPv4, IPv6
 ├── docs/                         # Дополнительная документация
-│   ├── AmneziaToVPSManual.html   # Гайд по ручной установке сервиса(с скриптами)
+│   └── AmneziaToVPSManual.html   # Гайд по ручной установке сервиса(с скриптами)
 ```
 ## 📝 Лицензия
 MIT
