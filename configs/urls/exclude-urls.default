@@ -1,0 +1,6 @@
+# === Источники для Direct (напрямую) ===
+# Российские ресурсы
+https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Russia/outside-kvas.lst
+
+# Исключения от AntiZapret
+https://github.com/GubernievS/AntiZapret-VPN/raw/refs/heads/main/setup/root/antizapret/download/exclude-hosts.txt
