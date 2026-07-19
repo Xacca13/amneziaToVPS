@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmneziaWG Gateway — Интерактивный установщик</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        header p { font-size: 1.2em; opacity: 0.9; }
+        nav {
+            background: #1e293b;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        nav a:hover { background: #334155; }
+        main { padding: 40px; }
+        section { margin-bottom: 50px; scroll-margin-top: 80px; }
+        h2 {
+            color: #10b981;
+            border-bottom: 3px solid #10b981;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        h3 {
+            color: #3b82f6;
+            margin: 25px 0 15px;
+            font-size: 1.5em;
+        }
+        .card {
+            background: #f7fafc;
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .warning { background: #fff3cd; border-left-color: #ffc107; }
+        .success { background: #d4edda; border-left-color: #28a745; }
+        .info { background: #d1ecf1; border-left-color: #17a2b8; }
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre;
+            font-family: 'Courier New', monospace;
+        }
+        code {
+            background: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e53e3e;
+        }
+        pre code {
+            background: transparent;
+            color: #e2e8f0;
+            padding: 0;
+        }
+        .tree {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 8px;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .tree .folder { color: #fbbf24; font-weight: bold; }
+        .tree .file { color: #60a5fa; }
+        .tree .comment { color: #94a3b8; font-style: italic; }
+        .step {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .step-number {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background: #10b981;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover { background: #f7fafc; }
+        .flow-diagram {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dbeafe 100%);
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .flow-step .num {
+            background: #10b981;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .flow-step .arrow {
+            color: #10b981;
+            font-size: 1.5em;
+            margin: 0 10px;
+        }
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .module-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        .module-card:hover {
+            border-color: #10b981;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+        }
+        .module-card.required { border-left: 4px solid #10b981; }
+        .module-card.optional { border-left: 4px solid #f59e0b; }
+        .module-card h4 {
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .module-card .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .tag.required { background: #d1fae5; color: #065f46; }
+        .tag.optional { background: #fef3c7; color: #92400e; }
+        .interactive-demo {
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre;
+            overflow-x: auto;
+            tab-size: 4;
+        }
+        .interactive-demo .prompt { color: #3fb950; font-weight: bold; }
+        .interactive-demo .user-input { color: #f0883e; font-weight: bold; }
+        .interactive-demo .info-text { color: #8b949e; }
+        .interactive-demo .success { color: #3fb950; }
+        .interactive-demo .highlight { color: #58a6ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 AmneziaWG Gateway</h1>
+            <p>Интерактивный установщик с модульной архитектурой</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#overview">Обзор</a></li>
+                <li><a href="#quick-start">Быстрый старт</a></li>
+                <li><a href="#workflow">Как работает</a></li>
+                <li><a href="#modules">Модули</a></li>
+                <li><a href="#demo">Демо установки</a></li>
+                <li><a href="#repo">Структура репозитория</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section id="overview">
+                <h2>📖 Обзор</h2>
+                <div class="card">
+                    <h3>Что это?</h3>
+                    <p>Модульная система развертывания VPN-шлюза на базе AmneziaWG. Вместо монолитного скрипта на 2000 строк — <strong>интерактивный установщик</strong>, который:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Спрашивает, какой режим работы вам нужен</li>
+                        <li>Предлагает выбрать опциональные компоненты</li>
+                        <li>Скачивает только нужные модули из GitHub</li>
+                        <li>Интерактивно настраивает списки маршрутизации</li>
+                    </ul>
+                </div>
+
+                <div class="card info">
+                    <h3>🎯 Преимущества модульного подхода</h3>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>Гибкость</strong>: Устанавливайте только то, что нужно</li>
+                        <li><strong>Экономия ресурсов</strong>: Не ставьте Zapret, если он не нужен</li>
+                        <li><strong>Простота обновления</strong>: Каждый модуль обновляется отдельно</li>
+                        <li><strong>Читаемость</strong>: Каждый скрипт — 50-200 строк, а не 2000</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="quick-start">
+                <h2>⚡ Быстрый старт</h2>
+
+                <div class="step">
+                    <h3><span class="step-number">1</span>Запуск установщика одной командой</h3>
+                    <pre><code>curl -sSL https://raw.githubusercontent.com/yourusername/amnezia-gateway/main/install.sh | bash</code></pre>
+                    <p style="margin-top: 10px;">Или клонирование репозитория:</p>
+                    <pre><code>cd /root
+git clone https://github.com/yourusername/amnezia-gateway.git
+cd amnezia-gateway
+chmod +x install.sh
+./install.sh</code></pre>
+                </div>
+
+                <div class="step">
+                    <h3><span class="step-number">2</span>Следуйте интерактивным подсказкам</h3>
+                    <p>Установщик задаст вам 5 простых вопросов:</p>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Режим работы (Мульти-конфиги / Каскад)</li>
+                        <li>Публичный IP VPS</li>
+                        <li>Какие локальные серверы запустить (Split/Full/Оба)</li>
+                        <li>Опциональные компоненты (Smart Update / AdGuard / Zapret)</li>
+                        <li>Источники списков маршрутизации</li>
+                    </ol>
+                </div>
+
+                <div class="step">
+                    <h3><span class="step-number">3</span>Готово!</h3>
+                    <p>После завершения установки система полностью готова к работе. Используйте команду <code>vpn-help</code> для просмотра всех доступных команд.</p>
+                </div>
+            </section>
+
+            <section id="workflow">
+                <h2>🔄 Как работает установщик</h2>
+
+                <div class="flow-diagram">
+                    <h3>Поток выполнения install.sh</h3>
+
+                    <div class="flow-step">
+                        <div class="num">1</div>
+                        <div>
+                            <strong>Запуск install.sh</strong><br>
+                            <small>Проверка прав root, определение пользователя, создание структуры папок</small>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="num">2</div>
+                        <div>
+                            <strong>Интерактивное меню</strong><br>
+                            <small>Выбор режима, опций, источников списков</small>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="num">3</div>
+                        <div>
+                            <strong>Скачивание модулей</strong><br>
+                            <small>curl с GitHub → modules/00-base-system.sh, modules/01-amneziawg.sh и т.д.</small>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="num">4</div>
+                        <div>
+                            <strong>Последовательное выполнение</strong><br>
+                            <small>Каждый модуль выполняется по очереди, логи пишутся в /var/log/amnezia-gateway.log</small>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="num">5</div>
+                        <div>
+                            <strong>Финальная настройка</strong><br>
+                            <small>Применение правил, запуск сервисов, вывод инструкций</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="modules">
+                <h2>📦 Модули системы</h2>
+
+                <p>Установщик скачивает только те модули, которые нужны для выбранного режима.</p>
+
+                <h3>Обязательные модули</h3>
+                <div class="module-grid">
+                    <div class="module-card required">
+                        <span class="tag required">ОБЯЗАТЕЛЬНЫЙ</span>
+                        <h4>00-base-system.sh</h4>
+                        <p>Обновление системы, установка зависимостей, massdns, структура папок</p>
+                    </div>
+
+                    <div class="module-card required">
+                        <span class="tag required">ОБЯЗАТЕЛЬНЫЙ</span>
+                        <h4>01-amneziawg.sh</h4>
+                        <p>Установка ядра AmneziaWG и инструментов</p>
+                    </div>
+
+                    <div class="module-card required">
+                        <span class="tag required">ОБЯЗАТЕЛЬНЫЙ</span>
+                        <h4>02-server-split.sh</h4>
+                        <p>Сервер Split Tunneling (порт 41820) + 10 клиентских конфигов</p>
+                    </div>
+
+                    <div class="module-card required">
+                        <span class="tag required">ОБЯЗАТЕЛЬНЫЙ</span>
+                        <h4>03-server-full.sh</h4>
+                        <p>Сервер Full Tunnel (порт 41821) + 10 клиентских конфигов</p>
+                    </div>
+
+                    <div class="module-card required">
+                        <span class="tag required">ОБЯЗАТЕЛЬНЫЙ</span>
+                        <h4>07-routes-updater.sh</h4>
+                        <p>Главный скрипт обновления маршрутов с massdns и ipset</p>
+                    </div>
+                </div>
+
+                <h3>Режим-зависимые модули</h3>
+                <div class="module-grid">
+                    <div class="module-card required">
+                        <span class="tag required">📦 MULTI ONLY</span>
+                        <h4>04-client-multi.sh</h4>
+                        <p>Скрипт автопереключения switch-vpn.sh + сложный Watchdog</p>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #666;">Только для режима "Мульти-конфиги"</p>
+                    </div>
+
+                    <div class="module-card required">
+                        <span class="tag required">🌉 CASCADE ONLY</span>
+                        <h4>05-client-cascade.sh</h4>
+                        <p>Упрощенный Watchdog для каскада VPS-to-VPS</p>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #666;">Только для режима "Каскад"</p>
+                    </div>
+                </div>
+
+                <h3>Опциональные модули</h3>
+                <div class="module-grid">
+                    <div class="module-card optional">
+                        <span class="tag optional">ОПЦИОНАЛЬНО</span>
+                        <h4>06-lists-manager.sh</h4>
+                        <p>Smart Update v2.0 — автозагрузка списков с 3-уровневой фильтрацией</p>
+                    </div>
+
+                    <div class="module-card optional">
+                        <span class="tag optional">ОПЦИОНАЛЬНО</span>
+                        <h4>08-adguard.sh</h4>
+                        <p>AdGuard Home — DNS-фильтр для блокировки рекламы</p>
+                    </div>
+
+                    <div class="module-card optional">
+                        <span class="tag optional">ОПЦИОНАЛЬНО</span>
+                        <h4>09-zapret.sh</h4>
+                        <p>Zapret 2 — обход DPI для скрытия VPN-трафика</p>
+                    </div>
+
+                    <div class="module-card optional">
+                        <span class="tag optional">ОПЦИОНАЛЬНО</span>
+                        <h4>10-aliases.sh</h4>
+                        <p>Удобные алиасы для управления системой</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="demo">
+    <h2>🎮 Демо процесса установки</h2>
+
+    <div class="interactive-demo"><span class="prompt">root@vps:~#</span> <span class="user-input">./install.sh</span>
+
+<span class="info-text">╔════════════════════════════════════════════════════════════════╗
+║     🛡️  AmneziaWG Gateway: Modular Installer (CentOS 9)       ║
+╚════════════════════════════════════════════════════════════════╝</span>
+
+<span class="info-text">📡 ШАГ 1. Выберите режим подключения к интернету (Upstream):</span>
+  1) 📦 Мульти-конфиги (Автопереключение, тест скорости)
+  2) 🌉 Каскад VPS-to-VPS (Один статичный VPS)
+<span class="prompt">Ваш выбор [1/2]:</span> <span class="user-input">1</span>
+
+<span class="info-text">🌐 Укажите публичный IP этого VPS:</span>
+<span class="prompt">IP:</span> <span class="user-input">185.123.45.67</span>
+
+<span class="info-text">📶 ШАГ 2. Какие локальные серверы запустить?</span>
+  1) Split (41820) + Full (41821)
+  2) Только Split (41820)
+  3) Только Full (41821)
+<span class="prompt">Ваш выбор [1-3]:</span> <span class="user-input">1</span>
+
+<span class="info-text">🧩 ШАГ 3. Дополнительные опции:</span>
+<span class="prompt">🧠 Smart Update?</span> <span class="user-input">y</span>
+<span class="prompt">🛡️  AdGuard Home?</span> <span class="user-input">y</span>
+<span class="prompt">⚡ Zapret?</span> <span class="user-input">n</span>
+
+<span class="info-text">📋 ШАГ 4. Настройка списков маршрутизации:</span>
+
+<span class="info-text">Источники для VPN:</span>
+  1) ✅ Antifilter + Re-filter
+  2) ✅ GubernievS (Roblox/WhatsApp/Google)
+  3) ✅ Itdoginfo Services
+  4) ✅ Itdoginfo Subnets
+  5) 📦 Всё вышеперечисленное
+  6) ⚪ Пропустить
+<span class="prompt">Ваш выбор [1-6]:</span> <span class="user-input">5</span>
+
+<span class="info-text">Источники для Direct:</span>
+  1) ✅ AntiZapret exclude-hosts
+  2) ✅ Itdoginfo outside-kvas
+  3) 📦 Оба
+  4) ⚪ Пропустить
+<span class="prompt">Ваш выбор [1-4]:</span> <span class="user-input">3</span>
+
+<span class="info-text">Глобальные фильтры (мусор):</span>
+  1) ✅ AntiZapret remove-hosts
+  2) ✅ OISD Big + NSFW
+  3) ✅ AdGuard + HaGeZi
+  4) 📦 Все фильтры
+  5) ⚪ Пропустить
+<span class="prompt">Ваш выбор [1-5]:</span> <span class="user-input">4</span>
+
+<span class="info-text">════════════════════════════════════════════════════════════════
+                    📋 СВОДКА УСТАНОВКИ
+════════════════════════════════════════════════════════════════</span>
+  Режим:            📦 Мульти-конфиги
+  Публичный IP:     185.123.45.67
+  Split Tunnel:     ✅ Да (порт 41820)
+  Full Tunnel:      ✅ Да (порт 41821)
+  Smart Update:     ✅ Да
+  AdGuard Home:     ✅ Да
+  Zapret:           ❌ Нет
+<span class="info-text">════════════════════════════════════════════════════════════════</span>
+
+<span class="prompt">Начать установку? [y/n]:</span> <span class="user-input">y</span>
+
+<span class="highlight">📥 Скачивание модулей из GitHub...</span>
+  <span class="success">✓</span> modules/00-base-system.sh
+  <span class="success">✓</span> modules/01-amneziawg.sh
+  <span class="success">✓</span> modules/02-server-split.sh
+  <span class="success">✓</span> modules/03-server-full.sh
+  <span class="success">✓</span> modules/04-client-multi.sh
+  <span class="success">✓</span> modules/06-lists-manager.sh
+  <span class="success">✓</span> modules/07-routes-updater.sh
+  <span class="success">✓</span> modules/08-adguard.sh
+  <span class="success">✓</span> modules/10-aliases.sh
+
+<span class="highlight">⚙️  Выполнение модулей...</span>
+  [00-base]    ✅ Система обновлена, massdns установлен
+  [01-amnezia] ✅ AmneziaWG установлен, модуль ядра загружен
+  [02-split]   ✅ Split Tunneling сервер (порт 41820), 10 клиентов
+  [03-full]    ✅ Full Tunnel сервер (порт 41821), 10 клиентов
+  [04-multi]   ✅ switch-vpn.sh + Watchdog + timers
+  [06-lists]   ✅ Smart Update v2.0, таймер (воскресенье 03:00)
+  [07-routes]  ✅ update-vpn-routes.sh создан
+  [08-adguard] ✅ AdGuard Home установлен (порт 53, 3000)
+  [10-aliases] ✅ Алиасы добавлены в .bashrc
+
+<span class="success">╔════════════════════════════════════════════════════════════════╗
+║                    🎉 УСТАНОВКА ЗАВЕРШЕНА!                    ║
+╚════════════════════════════════════════════════════════════════╝</span>
+
+<span class="info-text">📋 Следующие шаги:</span>
+  1. Загрузите конфиги в ~/amnezia/clients/
+  2. Выполните: <span class="user-input">vpn-reload</span>
+  3. Справка:   <span class="user-input">vpn-help</span>
+
+<span class="info-text">🛡️  AdGuard Home:</span> http://185.123.45.67:3000
+
+<span class="prompt">root@vps:~#</span></div>
+</section>
+
+            <section id="repo">
+                <h2>📁 Структура репозитория на GitHub</h2>
+
+                <div class="tree"><span class="folder">amnezia-gateway/</span>
+├── <span class="file">install.sh</span>                    <span class="comment"># Главный интерактивный установщик</span>
+├── <span class="file">README.md</span>                     <span class="comment"># Описание проекта</span>
+├── <span class="folder">modules/</span>                      <span class="comment"># Все модули установки</span>
+│   ├── <span class="file">00-base-system.sh</span>         <span class="comment"># Базовая подготовка CentOS 9</span>
+│   ├── <span class="file">01-amneziawg.sh</span>           <span class="comment"># Установка AmneziaWG</span>
+│   ├── <span class="file">02-server-split.sh</span>        <span class="comment"># Сервер Split Tunneling</span>
+│   ├── <span class="file">03-server-full.sh</span>         <span class="comment"># Сервер Full Tunnel</span>
+│   ├── <span class="file">04-client-multi.sh</span>        <span class="comment"># Клиент с автопереключением</span>
+│   ├── <span class="file">05-client-cascade.sh</span>      <span class="comment"># Клиент для каскада</span>
+│   ├── <span class="file">06-lists-manager.sh</span>       <span class="comment"># Smart Update v2.0</span>
+│   ├── <span class="file">07-routes-updater.sh</span>      <span class="comment"># Обновление маршрутов</span>
+│   ├── <span class="file">08-adguard.sh</span>             <span class="comment"># AdGuard Home</span>
+│   ├── <span class="file">09-zapret.sh</span>              <span class="comment"># Zapret 2</span>
+│   └── <span class="file">10-aliases.sh</span>             <span class="comment"># Алиасы и команды</span>
+├── <span class="folder">configs/</span>                      <span class="comment"># Шаблоны конфигов</span>
+│   ├── <span class="folder">urls/</span>
+│   │   ├── <span class="file">include-urls.default</span>  <span class="comment"># Шаблоны для VPN</span>
+│   │   ├── <span class="file">exclude-urls.default</span>  <span class="comment"># Шаблоны для Direct</span>
+│   │   └── <span class="file">filter-urls.default</span>   <span class="comment"># Шаблоны фильтров</span>
+│   └── <span class="folder">lists/</span>
+│       ├── <span class="file">vpn-domains.conf</span>      <span class="comment"># Домены через VPN</span>
+│       └── <span class="file">vpn-outside.conf</span>      <span class="comment"># Домены напрямую</span>
+└── <span class="folder">docs/</span>                         <span class="comment"># Документация</span>
+    ├── <span class="file">full-guide.html</span>           <span class="comment"># Гайд 1 (со всеми скриптами)</span>
+    └── <span class="file">installer-guide.html</span>      <span class="comment"># Гайд 2 (этот гайд)</span></div>
+
+                <div class="card info">
+                    <h3>💡 Как это работает</h3>
+                    <p>Когда вы запускаете <code>install.sh</code>, он:</p>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Спрашивает у вас, какие модули нужны</li>
+                        <li>Скачивает их через <code>curl</code> из папки <code>modules/</code></li>
+                        <li>Делает их исполняемыми (<code>chmod +x</code>)</li>
+                        <li>Последовательно выполняет каждый модуль</li>
+                        <li>Логирует все действия в <code>/var/log/amnezia-gateway.log</code></li>
+                    </ol>
+                </div>
+
+                <div class="card warning">
+                    <h3>⚠️ Важные замечания</h3>
+                    <ul style="margin-left: 20px;">
+                        <li>Все модули хранятся в репозитории GitHub — вы можете их просмотреть и модифицировать</li>
+                        <li>После установки все скрипты остаются на VPS в <code>~/amnezia/</code></li>
+                        <li>Вы можете запустить <code>install.sh</code> повторно для изменения конфигурации</li>
+                        <li>Каждый модуль идемпотентен — его можно запускать многократно без побочных эффектов</li>
+                    </ul>
+                </div>
+            </section>
+
+<section id="next">
+                <h2>🎯 Что дальше</h2>
+
+                <div class="card success">
+                    <h3>После установки</h3>
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Загрузите конфиги провайдеров в <code>~/amnezia/clients/</code> (режим Мульти) или создайте конфиг каскада</li>
+                        <li>Выполните <code>vpn-reload</code> для полного цикла настройки</li>
+                        <li>Подключите устройства к VPN через конфиги из <code>~/amnezia/server-clients/</code></li>
+                        <li>Используйте <code>vpn-help</code> для просмотра всех доступных команд</li>
+                    </ol>
+                </div>
+
+                <div class="card">
+                    <h3>📚 Документация проекта</h3>
+                    <p>В репозитории доступны два справочных файла:</p>
+
+                    <div class="guides-comparison">
+                        <div class="guide-box">
+                            <h4>📘 Полное руководство со скриптами</h4>
+                            <p>Все скрипты с подробными комментариями, готовые к копированию в терминал. Для тех, кто хочет понять каждую строчку кода или настроить систему вручную.</p>
+                            <ul>
+                                <li>Все 11 модулей с полным кодом</li>
+                                <li>Оба режима (Мульти + Каскад)</li>
+                                <li>Опциональные компоненты</li>
+                                <li>Финальная проверка</li>
+                            </ul>
+                            <span class="file-path">docs/full-guide.html</span>
+                        </div>
+
+                        <div class="guide-box">
+                            <h4>📗 Этот гайд (установщик)</h4>
+                            <p>Описание работы install.sh, демо процесса, структура репозитория. Для тех, кто хочет быстро развернуть систему одной командой.</p>
+                            <ul>
+                                <li>Быстрый старт (1 команда)</li>
+                                <li>Описание всех модулей</li>
+                                <li>Демо интерактивного меню</li>
+                                <li>Структура репозитория</li>
+                            </ul>
+                            <span class="file-path">docs/installer-guide.html</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card info">
+                    <h3>🔧 Полезные команды после установки</h3>
+                    <pre><code>vpn-help              # Справка по всем командам
+vpn-reload            # Полный цикл обновления
+vpn-update            # Обновить правила маршрутизации
+vpn-fast              # Быстрое обновление БЕЗ резолвинга
+aws                   # Статус обоих серверов
+awc                   # Статус клиентского туннеля
+vpn-lists-update      # Обновить списки вручную
+vpn-stats             # Статистика записей
+edit-vpn              # Редактировать vpn-domains.conf
+edit-direct           # Редактировать vpn-outside.conf
+watchdog-logs         # Логи Watchdog</code></pre>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
