@@ -36,8 +36,8 @@ $ curl -sSL https://raw.githubusercontent.com/Xacca13/amnezia-gateway/main/insta
 
 ╔════════════════════════════════════════════════════════════════╗
 ║                                                                ║
-║     🛡️  AmneziaWG Gateway — Модульный установщик              ║
-║     📦 Версия: 2.1 | 🐧 CentOS 9 Stream (Dynamic URLs)       ║
+║     🛡️  AmneziaWG Gateway — Модульный установщик               ║
+║     📦 Версия: 2.1 | 🐧 CentOS 9 Stream (Dynamic URLs)         ║
 ║                                                                ║
 ╚════════════════════════════════════════════════════════════════╝
 
