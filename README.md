@@ -59,6 +59,3 @@ amnezia-gateway/
 ```
 ## 📝 Лицензия
 MIT
-
-## 🤝 Вклад
-Pull requests приветствуются!
