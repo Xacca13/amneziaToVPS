@@ -131,20 +131,22 @@ root@vps:~#
 ## 🏗️ Архитектура
 ```
 amnezia-gateway/
-├── install.sh              # Главный интерактивный установщик
-├── modules/                # Модули установки
-│   ├── 00-base-system.sh   # Базовая подготовка
-│   ├── 01-amneziawg.sh     # AmneziaWG
-│   ├── 02-server-split.sh  # Split Tunneling сервер
-│   ├── 03-server-full.sh   # Full Tunnel сервер
-│   ├── 04-client-multi.sh  # Клиент с автопереключением
-│   ├── 05-client-cascade.sh # Клиент для каскада
-│   ├── 06-lists-manager.sh # Smart Update
-│   ├── 07-routes-updater.sh # Обновление маршрутов
-│   ├── 08-adguard.sh       # AdGuard Home
-│   ├── 09-zapret.sh        # Zapret 2
-│   └── 10-aliases.sh       # Алиасы
-├── configs/urls/           # Шаблоны конфигов
+├── install.sh                    # Главный интерактивный установщик
+├── modules/                      # Модули установки
+│   ├── 00-base-system.sh         # Базовая подготовка
+│   ├── 01-amneziawg.sh           # AmneziaWG
+│   ├── 02-server-split.sh        # Split Tunneling сервер
+│   ├── 03-server-full.sh         # Full Tunnel сервер
+│   ├── 04-client-multi.sh        # Клиент с автопереключением
+│   ├── 05-client-cascade.sh      # Клиент для каскада
+│   ├── 06-lists-manager.sh       # Smart Update
+│   ├── 07-routes-updater.sh      # Обновление маршрутов
+│   ├── 08-adguard.sh             # AdGuard Home
+│   ├── 09-zapret.sh              # Zapret 2
+│   └── 10-aliases.sh             # Алиасы
+├── configs/urls/                 # Сборник ссылок на домены, адреса IPv4, IPv6
+├── docs/                         # Дополнительная документация
+│   ├── AmneziaToVPSManual.html   # Гайд по ручной установке сервиса(с скриптами)
 ```
 ## 📝 Лицензия
 MIT

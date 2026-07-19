@@ -1,0 +1,18 @@
+# Формат: Описание|URL
+# Пустые строки и строки, начинающиеся с #, игнорируются
+
+Antifilter: Reestr hostname|https://github.com/bol-van/rulist/refs/heads/main/reestr_hostname.txt
+Antifilter: Domains all|https://github.com/1andrevich/Re-filter-lists/releases/latest/download/domains_all.lst
+Antifilter: Ipsum|https://github.com/1andrevich/Re-filter-lists/releases/latest/download/ipsum.lst
+Antifilter: Community lst|https://github.com/1andrevich/Re-filter-lists/raw/refs/heads/main/community.lst
+GubernievS: Roblox|https://raw.githubusercontent.com/GubernievS/AntiZapret-VPN/main/setup/root/antizapret/download/roblox-ips.txt
+GubernievS: WhatsApp|https://raw.githubusercontent.com/GubernievS/AntiZapret-VPN/main/setup/root/antizapret/download/whatsapp-ips.txt
+GubernievS: Google|https://raw.githubusercontent.com/GubernievS/AntiZapret-VPN/main/setup/root/antizapret/download/google-ips.txt
+GubernievS: Telegram|https://raw.githubusercontent.com/GubernievS/AntiZapret-VPN/main/setup/root/antizapret/download/telegram-ips.txt
+GubernievS: Cloudflare|https://raw.githubusercontent.com/GubernievS/AntiZapret-VPN/main/setup/root/antizapret/download/cloudflare-ips.txt
+GubernievS: Discord|https://raw.githubusercontent.com/GubernievS/AntiZapret-VPN/main/setup/root/antizapret/download/discord-ips.txt
+Itdoginfo: Meta|https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/meta.lst
+Itdoginfo: Twitter|https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/twitter.lst
+Itdoginfo: YouTube|https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/youtube.lst
+Itdoginfo: TikTok|https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/tiktok.lst
+Itdoginfo: Subnets IPv4 Cloudflare|https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Subnets/IPv4/cloudflare.lst
