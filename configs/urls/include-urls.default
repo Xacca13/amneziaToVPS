@@ -1,0 +1,13 @@
+# === Источники для VPN (через туннель) ===
+# Заблокированные в РФ домены
+https://github.com/bol-van/rulist/refs/heads/main/reestr_hostname.txt
+https://github.com/1andrevich/Re-filter-lists/releases/latest/download/domains_all.lst
+https://github.com/1andrevich/Re-filter-lists/releases/latest/download/ipsum.lst
+
+# Крупные сервисы
+https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/meta.lst
+https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/twitter.lst
+https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/tiktok.lst
+https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/youtube.lst
+https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/discord.lst
+https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Services/telegram.lst

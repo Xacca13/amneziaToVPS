@@ -1,0 +1,13 @@
+# === Глобальные фильтры (очистка мусора) ===
+# Мертвые домены
+https://github.com/GubernievS/AntiZapret-VPN/raw/refs/heads/main/setup/root/antizapret/download/remove-hosts.txt.gz
+
+# Глобальный мусор
+https://github.com/sjhgvr/oisd/raw/refs/heads/main/domainswild2_big.txt
+https://raw.githubusercontent.com/sjhgvr/oisd/refs/heads/main/domainswild2_nsfw.txt
+
+# Специализированные фильтры
+https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/nsfw-onlydomains.txt
+https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/gambling-onlydomains.txt
+https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/fake-onlydomains.txt
