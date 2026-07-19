@@ -1776,22 +1776,49 @@ https://dns.surfsharkdns.com/dns-query
                 </div>
 
                 <div class="step">
-                    <h3><span class="step-number">4</span>Добавление списков блокировки (Фильтры)</h3>
-                    <p>Перейдите в Фильтры → Списки блокировки → Добавить пользовательский список. Добавьте следующие фильтры:</p>
-                    <table>
-                        <tr><th>Название фильтра</th><th>URL</th></tr>
-                        <tr><td>AdGuard DNS filter</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt</td></tr>
-                        <tr><td>AdGuard Russian filter</td><td>https://filters.adtidy.org/android/filters/1_optimized.txt</td></tr>
-                        <tr><td>OISD Big</td><td>https://big.oisd.nl</td></tr>
-                        <tr><td>Peter Lowe's Blocklist</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt</td></tr>
-                        <tr><td>EasyList</td><td>https://easylist.to/easylist/easylist.txt</td></tr>
-                        <tr><td>EasyPrivacy</td><td>https://easylist.to/easylist/easyprivacy.txt</td></tr>
-                        <tr><td>Phishing Army</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_18.txt</td></tr>
-                        <tr><td>HaGeZi's Xiaomi Tracker</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_60.txt</td></tr>
-                        <tr><td>HaGeZi's Windows/Office Tracker</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_63.txt</td></tr>
-                        <tr><td>HaGeZi's Apple Tracker</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_67.txt</td></tr>
-                    </table>
-                </div>
+    <h3><span class="step-number">4</span>Добавление списков блокировки (Фильтры)</h3>
+    <p>Перейдите в <strong>Фильтры</strong> → <strong>Списки блокировки</strong> → <strong>Добавить список блокировки</strong> → <strong>Добавить пользовательский список</strong>. Добавьте следующие проверенные фильтры (скопируйте URL и название):</p>
+
+    <div class="card info" style="margin-bottom: 15px;">
+        <strong>💡 Рекомендация:</strong> Не обязательно включать все списки сразу. Для оптимального баланса между защитой и скоростью достаточно выбрать 5–7 основных (например: AdGuard DNS, OISD Big, RU AdList, HaGeZi Pro и uBlock Unbreak). Избегайте дублирования (например, не включайте одновременно OISD Big и OISD Blocklist Big).
+    </div>
+
+    <table>
+        <tr><th>Название фильтра</th><th>URL для добавления</th></tr>
+        <tr><td>AdGuard DNS filter</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt</td></tr>
+        <tr><td>AdGuard Russian filter (Optimized)</td><td>https://filters.adtidy.org/android/filters/1_optimized.txt</td></tr>
+        <tr><td>RU AdList</td><td>https://easylist-downloads.adblockplus.org/advblock.txt</td></tr>
+        <tr><td>OISD Big</td><td>https://big.oisd.nl</td></tr>
+        <tr><td>OISD Blocklist Big</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt</td></tr>
+        <tr><td>Peter Lowe's Blocklist</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt</td></tr>
+        <tr><td>EasyList</td><td>https://easylist.to/easylist/easylist.txt</td></tr>
+        <tr><td>EasyPrivacy</td><td>https://easylist.to/easylist/easyprivacy.txt</td></tr>
+        <tr><td>Easylist Cookie List</td><td>https://secure.fanboy.co.nz/fanboy-cookiemonster.txt</td></tr>
+        <tr><td>Fanboy's Annoyance List</td><td>https://secure.fanboy.co.nz/fanboy-annoyance.txt</td></tr>
+        <tr><td>BitBlock</td><td>https://easylist-downloads.adblockplus.org/bitblock.txt</td></tr>
+        <tr><td>Counters</td><td>https://easylist-downloads.adblockplus.org/cntblock.txt</td></tr>
+        <tr><td>Phishing Army</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_18.txt</td></tr>
+        <tr><td>Phishing URL Blocklist (PhishTank and OpenPhish)</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_30.txt</td></tr>
+        <tr><td>WindowsSpyBlocker - Hosts spy rules</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_23.txt</td></tr>
+        <tr><td>Stalkerware indicators of compromise for Android and iOS</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_31.txt</td></tr>
+        <tr><td>NoTracking blocklist</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_32.txt</td></tr>
+        <tr><td>HaGeZi's Pro Blocklist</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_48.txt</td></tr>
+        <tr><td>HaGeZi's Gambling Blocklist</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_47.txt</td></tr>
+        <tr><td>HaGeZi's Fake DNS Blocklist</td><td>https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/fake.txt</td></tr>
+        <tr><td>HaGeZi's Threat Intelligence Feeds DNS Blocklist</td><td>https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt</td></tr>
+        <tr><td>HaGeZi's Xiaomi Tracker Blocklist</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_60.txt</td></tr>
+        <tr><td>HaGeZi's Windows/Office Tracker Blocklist</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_63.txt</td></tr>
+        <tr><td>HaGeZi's Apple Tracker Blocklist</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_67.txt</td></tr>
+        <tr><td>ShadowWhisperer Tracking List</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_69.txt</td></tr>
+        <tr><td>AdGuard DNS Popup Hosts filter</td><td>https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt</td></tr>
+        <tr><td>uBlock filters – Ads</td><td>https://ublockorigin.github.io/uAssets/filters/filters.min.txt</td></tr>
+        <tr><td>uBlock filters – Privacy</td><td>https://ublockorigin.github.io/uAssets/filters/privacy.min.txt</td></tr>
+        <tr><td>uBlock filters – Quick fixes</td><td>https://ublockorigin.github.io/uAssets/filters/quick-fixes.txt</td></tr>
+        <tr><td>uBlock filters – Unbreak</td><td>https://ublockorigin.github.io/uAssets/filters/unbreak.txt</td></tr>
+    </table>
+
+    <p style="margin-top: 15px;">После добавления нажмите кнопку <strong>"Обновить фильтры"</strong> в верхней части страницы.</p>
+</div>
 
                 <div class="step">
                     <h3><span class="step-number">5</span>Настройка клиентов</h3>
