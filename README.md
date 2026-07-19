@@ -123,7 +123,9 @@ Zapret:            ❌ Нет
 📋 Следующие шаги:
   1. Загрузите конфиги в ~/amnezia/clients/
   2. Выполните: vpn-reload
-  3. Справка: vpn-help 🛡️ AdGuard Home: http://185.123.45.67:3000
+  3. Справка:
+    vpn-help
+    🛡️ AdGuard Home: http://192.168.0.1:3000
 root@vps:~#
 ```
 ## 🏗️ Архитектура
