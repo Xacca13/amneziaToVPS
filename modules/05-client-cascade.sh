@@ -75,7 +75,6 @@ cat > /etc/amnezia/amneziawg/amnezia-client.conf.template << 'EOF'
 [Interface]
 PrivateKey = <ПРИВАТНЫЙ_КЛЮЧ_VPS_A>
 Address = 10.8.0.2/24
-# ВАЖНО: Table = off для policy routing
 Table = off
 Jc = 3; Jmin = 50; Jmax = 1000; S1 = 25; S2 = 50
 H1 = 12345678; H2 = 87654321; H3 = 11223344; H4 = 44332211

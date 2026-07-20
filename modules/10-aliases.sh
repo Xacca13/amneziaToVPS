@@ -40,6 +40,13 @@ vpn-help() {
     echo -e "  \${YELLOW}watchdog-status\${NC}   Статус таймера"
     echo -e "  \${YELLOW}watchdog-logs\${NC}     Логи Watchdog"
     echo ""
+    echo -e "\${BOLD}\${GREEN}🛡 ZAPRET2\${NC}"
+    echo -e "  \${YELLOW}zapret2-sync\${NC}      Запуск синхронизации списков Zapret2"
+    echo -e "  \${YELLOW}zapret2-status\${NC}    Статус Zapret2"
+    echo -e "  \${YELLOW}zapret2-stop\${NC}      Статус Zapret2"
+    echo -e "  \${YELLOW}zapret2-start\${NC}     Статус Zapret2"
+    echo -e "  \${YELLOW}zapret2-restart\${NC}   Статус Zapret2"
+    echo ""
     echo -e "\${BOLD}\${GREEN}✏ РЕДАКТИРОВАНИЕ\${NC}"
     echo -e "  \${YELLOW}edit-vpn\${NC}          vpn-domains.conf"
     echo -e "  \${YELLOW}edit-direct\${NC}       vpn-outside.conf"
@@ -73,6 +80,10 @@ alias edit-exclude-urls='nano $AMNEZIA_DIR/exclude_urls.conf'
 alias edit-exclude-custom='nano $AMNEZIA_DIR/exclude_custom.conf'
 alias edit-filter-urls='nano $AMNEZIA_DIR/filter_urls.conf'
 alias edit-filter-custom='nano $AMNEZIA_DIR/filter_custom.conf'
+alias zapret2-sync='$AMNEZIA_DIR/sync-vpn-domains-to-zapret.sh'
+alias zapret2-start='systemctl start zapret2'
+alias zapret2-stop='systemctl stop zapret2'
+alias zapret2-restar='systemctl restart zapret2'
 EOF
 
 # Создание мастер-скрипта vpn-reload

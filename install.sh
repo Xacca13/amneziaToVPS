@@ -131,7 +131,6 @@ select_clients_count() {
     echo -e "${YELLOW}💡 Сколько конфигураций клиентов сгенерировать для выбранных серверов?${NC}"
     read -p "$(echo -e ${CYAN}Введите число (по умолчанию 5, макс. 50):${NC} )" INPUT_COUNT
     
-    # Валидация ввода
     if [[ -z "$INPUT_COUNT" ]]; then
         CLIENT_COUNT=5
     elif [[ "$INPUT_COUNT" =~ ^[0-9]+$ ]] && [[ "$INPUT_COUNT" -ge 1 ]] && [[ "$INPUT_COUNT" -le 50 ]]; then
@@ -168,7 +167,6 @@ present_url_menu() {
     local -a urls=()
     local -a descs=()
     
-    # Читаем файл, игнорируя комментарии и пустые строки
     while IFS='|' read -r desc url || [[ -n "$url" ]]; do
         desc=$(echo "$desc" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
         url=$(echo "$url" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
@@ -218,22 +216,18 @@ select_urls_interactive() {
     echo -e "\n${BOLD}${CYAN}📋 ШАГ 4. Настройка списков маршрутизации:${NC}"
     echo -e "${YELLOW}💡 Загрузка актуальных списков из репозитория...${NC}"
     
-    # Скачиваем списки из репозитория
     download_list_file "include-urls.list" || { log_error "Критическая ошибка загрузки include-urls.list"; exit 1; }
     download_list_file "exclude-urls.list" || { log_error "Критическая ошибка загрузки exclude-urls.list"; exit 1; }
     download_list_file "filter-urls.list" || { log_error "Критическая ошибка загрузки filter-urls.list"; exit 1; }
     
     mkdir -p "$AMNEZIA_DIR"
     
-    # Запускаем интерактивное меню для каждой категории
     present_url_menu "$TEMP_DIR/configs/include-urls.list" "$AMNEZIA_DIR/include_urls.conf" "VPN (через туннель)"
     present_url_menu "$TEMP_DIR/configs/exclude-urls.list" "$AMNEZIA_DIR/exclude_urls.conf" "Direct (напрямую)"
     present_url_menu "$TEMP_DIR/configs/filter-urls.list" "$AMNEZIA_DIR/filter_urls.conf" "Глобальные фильтры (мусор)"
     
-    # Создаем файлы для ручного добавления
     cat > "$AMNEZIA_DIR/include_custom.conf" << 'EOF'
 # === Пользовательские домены и IP для VPN ===
-# Добавьте сюда то, чего нет в автоматических списках
 # youtube.com
 # telegram.org
 EOF
@@ -278,6 +272,7 @@ show_summary() {
     echo -e "  ${BOLD}Публичный IP:${NC}     $PUBLIC_IP"
     echo -e "  ${BOLD}Split Tunnel:${NC}     $( [[ $INSTALL_SPLIT -eq 1 ]] && echo '✅ Да (порт 41820)' || echo '❌ Нет' )"
     echo -e "  ${BOLD}Full Tunnel:${NC}      $( [[ $INSTALL_FULL -eq 1 ]] && echo '✅ Да (порт 41821)' || echo '❌ Нет' )"
+    echo -e "  ${BOLD}Клиентских конф.:${NC}  $CLIENT_COUNT"
     echo -e "  ${BOLD}Smart Update:${NC}     $( [[ $INSTALL_SMART -eq 1 ]] && echo '✅ Да' || echo '❌ Нет' )"
     echo -e "  ${BOLD}AdGuard Home:${NC}     $( [[ $INSTALL_ADGUARD -eq 1 ]] && echo '✅ Да' || echo '❌ Нет' )"
     echo -e "  ${BOLD}Zapret:${NC}           $( [[ $INSTALL_ZAPRET -eq 1 ]] && echo '✅ Да' || echo '❌ Нет' )"
@@ -319,13 +314,14 @@ main() {
     [[ $INSTALL_ADGUARD -eq 1 ]] && MANDATORY_MODULES+=("08-adguard.sh")
     [[ $INSTALL_ZAPRET -eq 1 ]] && MANDATORY_MODULES+=("09-zapret.sh")
     MANDATORY_MODULES+=("10-aliases.sh")
+    MANDATORY_MODULES+=("11-zapret-sync.sh") # Всегда добавляем, скрипт сам проверит наличие Zapret
     
     for module in "${MANDATORY_MODULES[@]}"; do
         download_module "$module" || { log_error "Критическая ошибка: не удалось скачать $module"; exit 1; }
     done
     
     echo -e "\n${BOLD}${CYAN}⚙️  Выполнение модулей...${NC}\n"
-    export PUBLIC_IP MODE_NAME AMNEZIA_DIR CURRENT_USER INSTALL_LOG
+    export PUBLIC_IP MODE_NAME AMNEZIA_DIR CURRENT_USER INSTALL_LOG CLIENT_COUNT
     
     log_info "🔧 Модуль 00: Базовая подготовка системы"
     bash "$TEMP_DIR/modules/00-base-system.sh" 2>&1 | tee -a "$INSTALL_LOG"
@@ -354,6 +350,9 @@ main() {
     
     log_info "🔧 Модуль 10: Алиасы и команды"
     bash "$TEMP_DIR/modules/10-aliases.sh" 2>&1 | tee -a "$INSTALL_LOG"
+
+    log_info "🔧 Модуль 11: Синхронизация с Zapret"
+    bash "$TEMP_DIR/modules/11-zapret-sync.sh" 2>&1 | tee -a "$INSTALL_LOG" || true
     
     log_info "🔧 Финальная настройка..."
     [[ $INSTALL_SMART -eq 1 ]] && bash "$AMNEZIA_DIR/update-lists.sh" 2>&1 | tee -a "$INSTALL_LOG" || true
@@ -378,8 +377,8 @@ main() {
         echo -e "  ${YELLOW}3.${NC} Примените правила: ${GREEN}vpn-update${NC}"
     fi
     
-    [[ $INSTALL_SPLIT -eq 1 ]] && echo -e "  ${YELLOW}4.${NC} Split конфиг: ${CYAN}$AMNEZIA_DIR/server-clients/client_01.conf${NC}"
-    [[ $INSTALL_FULL -eq 1 ]] && echo -e "  ${YELLOW}5.${NC} Full конфиг: ${CYAN}$AMNEZIA_DIR/server-clients-full/client_01.conf${NC}"
+    [[ $INSTALL_SPLIT -eq 1 ]] && echo -e "  ${YELLOW}4.${NC} Split конфиги ($CLIENT_COUNT шт.): ${CYAN}$AMNEZIA_DIR/server-clients/client_01.conf ...${NC}"
+    [[ $INSTALL_FULL -eq 1 ]] && echo -e "  ${YELLOW}5.${NC} Full конфиги ($CLIENT_COUNT шт.): ${CYAN}$AMNEZIA_DIR/server-clients-full/client_01.conf ...${NC}"
     [[ $INSTALL_ADGUARD -eq 1 ]] && echo -e "  ${YELLOW}6.${NC} AdGuard Home: ${CYAN}http://$PUBLIC_IP:3000${NC} (закройте порт 3000 после настройки!)"
     
     echo -e "\n  ${BOLD}📖 Справка:${NC} ${GREEN}vpn-help${NC}  |  ${BOLD}📝 Лог:${NC} ${CYAN}$INSTALL_LOG${NC}\n"

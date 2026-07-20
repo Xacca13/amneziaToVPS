@@ -242,7 +242,11 @@ if ip link show awg-server2 >/dev/null 2>&1; then
     ip rule add fwmark 0x2000 table 200
     echo "  ✅ awg-server2 восстановлен"
 fi
-
+# === 10. Синхронизация с Zapret (если установлен) ===
+if [[ -d "/opt/zapret2" ]] && [[ -x "$AMNEZIA_DIR/sync-vpn-domains-to-zapret.sh" ]]; then
+    echo "🔄 Синхронизация списков с Zapret..."
+    "$AMNEZIA_DIR/sync-vpn-domains-to-zapret.sh" 2>&1 | tail -n 6
+fi
 echo -e "${GREEN}🎉 Правила раздельного туннелирования успешно обновлены.${NC}"
 SCRIPT
 
