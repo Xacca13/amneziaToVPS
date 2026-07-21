@@ -247,6 +247,7 @@
                 <li><a href="#architecture">Архитектура</a></li>
                 <li><a href="#modes">Выбор режима</a></li>
                 <li><a href="#prep">Подготовка</a></li>
+                <li><a href="#security">Безопасность</a></li>
                 <li><a href="#install-awg">AmneziaWG</a></li>
                 <li><a href="#servers">Серверы</a></li>
                 <li><a href="#client">Клиент</a></li>
@@ -282,7 +283,7 @@
                         <li><strong>Self-Healing</strong> — Watchdog каждую минуту проверяет связь</li>
                         <li><strong>Smart Update v2.0</strong> — автозагрузка списков с 3-уровневой фильтрацией</li>
                         <li><strong>massdns</strong> — молниеносный резолвинг сотен тысяч доменов за секунды</li>
-                        <li><strong>Защита SSH</strong> — ваш IP всегда имеет priority 1 в ip rule</li>
+                        <li><strong>Многоуровневая защита</strong> — облачный firewall + firewalld + ip rules</li>
                     </ul>
                 </div>
 
@@ -299,23 +300,24 @@
                 <div class="toc">
                     <h3>📋 Содержание</h3>
                     <ul>
-                        <li><a href="#prep">2. Подготовка системы</a></li>
-                        <li><a href="#install-awg">3. Установка AmneziaWG</a></li>
-                        <li><a href="#servers">4. Серверы (Split + Full)</a></li>
-                        <li><a href="#client">5. Клиент (зависит от режима)</a>
+                        <li><a href="#prep">4. Подготовка системы</a></li>
+                        <li><a href="#security">5. 🔒 Настройка безопасности</a></li>
+                        <li><a href="#install-awg">6. Установка AmneziaWG</a></li>
+                        <li><a href="#servers">7. Серверы (Split + Full)</a></li>
+                        <li><a href="#client">8. Клиент (зависит от режима)</a>
                             <ul>
-                                <li><a href="#client-multi">5.1 Мульти-конфиги</a></li>
-                                <li><a href="#client-cascade">5.2 Каскад VPS-to-VPS</a></li>
+                                <li><a href="#client-multi">8.1 Мульти-конфиги</a></li>
+                                <li><a href="#client-cascade">8.2 Каскад VPS-to-VPS</a></li>
                             </ul>
                         </li>
-                        <li><a href="#lists">6. Списки маршрутизации</a></li>
-                        <li><a href="#update-lists">7. Smart Update v2.0</a></li>
-                        <li><a href="#reload">8. Мастер-скрипт vpn-reload</a></li>
-                        <li><a href="#routes">9. Скрипт обновления маршрутов</a></li>
-                        <li><a href="#adguard">10. [Опционально] AdGuard Home</a></li>
-                        <li><a href="#zapret">11. [Опционально] Zapret 2 и Синхронизация</a></li>
-                        <li><a href="#aliases">12. Команды и алиасы</a></li>
-                        <li><a href="#test">13. Финальная проверка</a></li>
+                        <li><a href="#lists">9. Списки маршрутизации</a></li>
+                        <li><a href="#update-lists">10. Smart Update v2.0</a></li>
+                        <li><a href="#reload">11. Мастер-скрипт vpn-reload</a></li>
+                        <li><a href="#routes">12. Скрипт обновления маршрутов</a></li>
+                        <li><a href="#adguard">13. [Опционально] AdGuard Home</a></li>
+                        <li><a href="#zapret">14. [Опционально] Zapret 2 и Синхронизация</a></li>
+                        <li><a href="#aliases">15. Команды и алиасы</a></li>
+                        <li><a href="#test">16. Финальная проверка</a></li>
                     </ul>
                 </div>
             </section>
@@ -383,7 +385,7 @@
             </section>
 
             <section id="prep">
-                <h2>⚙️ 2. Подготовка системы</h2>
+                <h2>⚙️ 4. Подготовка системы</h2>
                 <div class="step">
                     <h3><span class="step-number">1</span>Обновление и установка пакетов</h3>
                     <pre><code>dnf update -y
@@ -430,8 +432,124 @@ massdns --version</code></pre>
                 </div>
             </section>
 
+            <section id="security">
+                <h2>🔒 5. Настройка безопасности</h2>
+                <div class="card danger">
+                    <h3>⚠️ КРИТИЧЕСКИ ВАЖНО</h3>
+                    <p>Этот раздел необходимо выполнить <strong>ДО</strong> запуска AdGuard Home и других сервисов. Неправильная настройка может заблокировать доступ к серверу. Следуйте порядку действий строго!</p>
+                </div>
+
+                <div class="step">
+                    <h3><span class="step-number">1</span>Облачный firewall (в панели управления хостингом)</h3>
+                    <p>Это первый уровень защиты. Отсекает нежелательный трафик до того, как он достигнет вашего сервера.</p>
+                    <table>
+                        <tr>
+                            <th>Порт</th>
+                            <th>Протокол</th>
+                            <th>Источник</th>
+                            <th>Назначение</th>
+                            <th>Действие</th>
+                        </tr>
+                        <tr>
+                            <td>41820</td>
+                            <td>UDP</td>
+                            <td>0.0.0.0/0</td>
+                            <td>AmneziaWG Split Tunnel</td>
+                            <td>✅ Разрешить</td>
+                        </tr>
+                        <tr>
+                            <td>41821</td>
+                            <td>UDP</td>
+                            <td>0.0.0.0/0</td>
+                            <td>AmneziaWG Full Tunnel</td>
+                            <td>✅ Разрешить</td>
+                        </tr>
+                        <tr>
+                            <td>22</td>
+                            <td>TCP</td>
+                            <td>10.8.0.0/24, 10.9.0.0/24</td>
+                            <td>SSH</td>
+                            <td>✅ Разрешить</td>
+                        </tr>
+                        <tr>
+                            <td>53</td>
+                            <td>UDP, TCP</td>
+                            <td>10.8.0.0/24, 10.9.0.0/24</td>
+                            <td>DNS (AdGuard)</td>
+                            <td>✅ Разрешить</td>
+                        </tr>
+                        <tr>
+                            <td>3000</td>
+                            <td>TCP</td>
+                            <td>10.8.0.0/24, 10.9.0.0/24</td>
+                            <td>AdGuard Web UI</td>
+                            <td>✅ Разрешить</td>
+                        </tr>
+                        <tr>
+                            <td>Любой</td>
+                            <td>ICMP</td>
+                            <td>10.8.0.0/24, 10.9.0.0/24</td>
+                            <td>Ping</td>
+                            <td>✅ Разрешить</td>
+                        </tr>
+                        <tr>
+                            <td>Все остальные</td>
+                            <td>Любой</td>
+                            <td>0.0.0.0/0</td>
+                            <td>Запрет всего остального</td>
+                            <td>❌ Запретить</td>
+                        </tr>
+                    </table>
+                    <div class="card info" style="margin-top: 15px;">
+                        <strong>💡 Почему порты 41820 и 41821 открыты для всех?</strong><br>
+                        Протокол AmneziaWG использует криптографическую аутентификацию. Без приватного ключа подключиться невозможно. Все неавторизованные пакеты молча отбрасываются. Это стандартная и безопасная практика.
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h3><span class="step-number">2</span>Внутренний firewalld (CentOS)</h3>
+                    <p>Второй уровень защиты на уровне ОС. Запустите этот скрипт <strong>только после того, как вы убедились, что можете подключиться к серверу через включенный VPN (Amnezia)</strong>.</p>
+                    <pre><code>#!/bin/bash
+echo "🔒 Настройка firewalld..."
+
+# 1. Сброс существующих правил
+firewall-cmd --panic-on 2>/dev/null || true
+sleep 2
+firewall-cmd --panic-off
+firewall-cmd --remove-service=ssh --permanent 2>/dev/null || true
+firewall-cmd --remove-service=dns --permanent 2>/dev/null || true
+
+# 2. Открываем порты AmneziaWG для всех (необходимо для туннеля)
+firewall-cmd --add-port=41820/udp --permanent
+firewall-cmd --add-port=41821/udp --permanent
+
+# 3. Открываем SSH, DNS и AdGuard Web UI ТОЛЬКО для VPN-подсетей
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.8.0.0/24" service name="ssh" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.9.0.0/24" service name="ssh" accept' --permanent
+
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.8.0.0/24" port port="53" protocol="udp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.8.0.0/24" port port="53" protocol="tcp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.9.0.0/24" port port="53" protocol="udp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.9.0.0/24" port port="53" protocol="tcp" accept' --permanent
+
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.8.0.0/24" port port="3000" protocol="tcp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.9.0.0/24" port port="3000" protocol="tcp" accept' --permanent
+
+# 4. Разрешаем ICMP (ping) только для VPN-подсетей
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.8.0.0/24" protocol value="icmp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.9.0.0/24" protocol value="icmp" accept' --permanent
+
+# 5. Включаем masquerade и перезагружаем
+firewall-cmd --add-masquerade --permanent
+firewall-cmd --reload
+
+echo "✅ Настройка firewalld завершена!"
+echo "⚠️ ВАЖНО: Теперь SSH и AdGuard доступны только через VPN (10.8.0.x или 10.9.0.x)"</code></pre>
+                </div>
+            </section>
+
             <section id="install-awg">
-                <h2>🔧 3. Установка AmneziaWG</h2>
+                <h2>🔧 6. Установка AmneziaWG</h2>
                 <pre><code>dnf copr enable -y amneziavpn/amneziawg
 dnf install -y amneziawg-tools amneziawg-dkms dkms kernel-devel kernel-headers
 dkms autoinstall
@@ -440,7 +558,7 @@ lsmod | grep amnezia</code></pre>
             </section>
 
             <section id="servers">
-                <h2>🖥️ 4. Серверы Split и Full Tunnel</h2>
+                <h2>🖥️ 7. Серверы Split и Full Tunnel</h2>
                 <div class="card warning">
                     <h3>⚠️ ВАЖНО</h3>
                     <p>Замените <code>ВАШ_ПУБЛИЧНЫЙ_IP_VPS</code> в обоих скриптах на реальный IP вашего VPS перед запуском!</p>
@@ -479,13 +597,13 @@ for i in \$(seq 1 \$CLIENT_COUNT); do
     CLIENT_IP="10.8.0.\$((i + 1))"
     CLIENT_PRIV=\$(awg genkey)
     CLIENT_PUB=\$(echo "\$CLIENT_PRIV" | awg pubkey)
-    
+
     cat &lt;&lt;EOF &gt;&gt; /etc/amnezia/amneziawg/\${SERVER_INTERFACE}.conf
 [Peer]
 PublicKey = \$CLIENT_PUB
 AllowedIPs = \$CLIENT_IP/32
 EOF
-    
+
     cat &lt;&lt;EOF &gt; "\$CLIENT_DIR/client_\${CLIENT_NUM}.conf"
 [Interface]
 PrivateKey = \$CLIENT_PRIV
@@ -508,7 +626,8 @@ SCRIPT
 chmod +x /root/generate_awg.sh
 /root/generate_awg.sh
 systemctl enable --now awg-quick@awg-server
-firewall-cmd --add-port=41820/udp --permanent &amp;&amp; firewall-cmd --reload</code></pre>
+
+# ✅ Порт 41820 открыт для установления туннеля. Остальные порты защищены в Разделе 5.</code></pre>
                 </div>
                 <div class="step">
                     <h3><span class="step-number">2</span>Сервер 2: Full Tunnel (порт 41821)</h3>
@@ -544,13 +663,13 @@ for i in \$(seq 1 \$CLIENT_COUNT); do
     CLIENT_IP="10.9.0.\$((i + 1))"
     CLIENT_PRIV=\$(awg genkey)
     CLIENT_PUB=\$(echo "\$CLIENT_PRIV" | awg pubkey)
-    
+
     cat &lt;&lt;EOF &gt;&gt; /etc/amnezia/amneziawg/\${SERVER_INTERFACE}.conf
 [Peer]
 PublicKey = \$CLIENT_PUB
 AllowedIPs = \$CLIENT_IP/32
 EOF
-    
+
     cat &lt;&lt;EOF &gt; "\$CLIENT_DIR/client_\${CLIENT_NUM}.conf"
 [Interface]
 PrivateKey = \$CLIENT_PRIV
@@ -573,12 +692,13 @@ SCRIPT
 chmod +x /root/generate_awg2.sh
 /root/generate_awg2.sh
 systemctl enable --now awg-quick@awg-server2
-firewall-cmd --add-port=41821/udp --permanent &amp;&amp; firewall-cmd --reload</code></pre>
+
+# ✅ Порт 41821 открыт для установления туннеля. Остальные порты защищены в Разделе 5.</code></pre>
                 </div>
             </section>
 
             <section id="client">
-                <h2>🔌 5. Настройка клиента (зависит от режима)</h2>
+                <h2>🔌 8. Настройка клиента (зависит от режима)</h2>
                 <div class="mode-specific" data-mode="multi">
                     <span class="badge multi">📦 Режим: Мульти-Конфиги</span>
                     <div class="card danger">
@@ -618,28 +738,28 @@ for conf in "$CLIENT_DIR"/*.conf; do
     conf_name=$(basename "$conf")
     [[ "$conf_name" == "$EXCLUDE_CONF" ]] &amp;&amp; { echo -e "${YELLOW}⏭️ [$TOTAL] Пропускаем: $conf_name${NC}"; continue; }
     echo -n "🔄 [$TOTAL] Тестируем $conf_name ... "
-    
+
     cp "$conf" "$ACTIVE_CONF"; chmod 600 "$ACTIVE_CONF"
     systemctl start "$ACTIVE_SERVICE" 2&gt;/dev/null; sleep 5
-    
+
     handshake=$(awg show amnezia-client 2&gt;/dev/null | grep "latest handshake" | awk '{print $3, $4, $5}')
     if [[ "$handshake" == "(none)" || -z "$handshake" ]]; then
         echo -e "${RED}✗ Нет handshake${NC}"; systemctl stop "$ACTIVE_SERVICE" 2&gt;/dev/null; sleep 3; continue
     fi
-    
+
     ping_time=$(ping -I amnezia-client -c 3 -W 2 1.1.1.1 2&gt;/dev/null | awk -F'/' '/rtt/ {print $5}')
     if [[ -z "$ping_time" ]]; then
         echo -e "${RED}✗ Трафик не проходит${NC}"; systemctl stop "$ACTIVE_SERVICE" 2&gt;/dev/null; sleep 3; continue
     fi
-    
+
     speed_time=$(curl -s -o /dev/null -w "%{time_total}" --interface amnezia-client \
         --connect-timeout 4 --max-time 6 "https://speed.cloudflare.com/__down?bytes=100000" 2&gt;/dev/null)
     [[ -z "$speed_time" || "$speed_time" == "0.000" ]] &amp;&amp; speed_time="5.0"
     speed_mbps=$(awk -v t="$speed_time" 'BEGIN { if(t&gt;0) printf "%.2f", 0.8/t; else print "0.00" }')
-    
+
     echo -e "${GREEN}✓${NC} Пинг: ${YELLOW}${ping_time} мс${NC}, Скорость: ${CYAN}${speed_mbps} Мбит/с${NC}"
     ((VALID++))
-    
+
     is_better=$(awk -v p="$ping_time" -v bp="$BEST_PING" -v s="$speed_mbps" -v bs="$BEST_SPEED" 'BEGIN {
         if (s &lt; 1.0) { print 0; exit }
         if (bp == 9999) { print 1; exit }
@@ -836,7 +956,7 @@ systemctl daemon-reload &amp;&amp; systemctl enable --now vpn-watchdog-cascade.t
             </section>
 
             <section id="lists">
-                <h2>📋 6. Списки маршрутизации</h2>
+                <h2>📋 9. Списки маршрутизации</h2>
                 <pre><code>CURRENT_USER=$(logname 2>/dev/null || whoami)
 AMNEZIA_DIR="/home/$CURRENT_USER/amnezia"
 
@@ -860,7 +980,7 @@ chown $CURRENT_USER:$CURRENT_USER "$AMNEZIA_DIR/vpn-outside.conf"</code></pre>
             </section>
 
             <section id="update-lists">
-                <h2>🧠 7. Smart Update v2.0</h2>
+                <h2>🧠 10. Smart Update v2.0</h2>
                 <div class="card info">
                     <h3>Умная логика (3 уровня)</h3>
                     <ol style="margin-left: 20px; margin-top: 10px;">
@@ -960,17 +1080,17 @@ process_list() {
     local target_file="$3"
     local backup_file="$4"
     local list_name="$5"
-    
+
     log "🔄 Начало обработки списка $list_name..."
-    
+
     local temp_domains="$TEMP_DIR/${list_name}_domains.tmp"
     local temp_ipv4="$TEMP_DIR/${list_name}_ipv4.tmp"
     local temp_ipv6="$TEMP_DIR/${list_name}_ipv6.tmp"
-    
+
     &gt; "$temp_domains"; &gt; "$temp_ipv4"; &gt; "$temp_ipv6"
-    
+
     local CLEAN_SED='s/#.*//; s/[\r[:space:]]+//g; /^[[:punct:]]/d; /^$/d; s/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+[[:space:]]+//; s/[]_~:\/?#\[@!$&amp;'\''()*+,;=].*//; s/^\*\.//; s/\.$//; s/.*/\L&amp;/'
-    
+
     if [[ -f "$urls_file" ]]; then
         while IFS= read -r url || [[ -n "$url" ]]; do
             [[ -z "$url" || "$url" =~ ^[[:space:]]*# ]] &amp;&amp; continue
@@ -993,7 +1113,7 @@ process_list() {
             sleep 2
         done &lt; "$urls_file"
     fi
-    
+
     if [[ -f "$custom_file" ]]; then
         log "📂 Чтение пользовательского файла ($list_name): $custom_file"
         grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}(/[0-9]{1,2})?' "$custom_file" &gt;&gt; "$temp_ipv4" 2&gt;/dev/null
@@ -1008,10 +1128,10 @@ process_list() {
 CUSTOM_TEMPLATE
         chown "$CURRENT_USER:$CURRENT_USER" "$custom_file" 2&gt;/dev/null || true
     fi
-    
+
     log "🧹 Оптимизация и дедупликация списков..."
     sort -u "$temp_domains" -o "$temp_domains"
-    
+
     local temp_domains_puny="$TEMP_DIR/${list_name}_domains_puny.tmp"
     if command -v idn2 &amp;&gt; /dev/null; then
         while IFS= read -r domain; do
@@ -1021,10 +1141,10 @@ CUSTOM_TEMPLATE
     else
         log "${YELLOW}⚠️ Утилита 'idn2' не найдена. Кириллические домены не будут преобразованы.${NC}"
     fi
-    
+
     local temp_domains_filtered="$TEMP_DIR/${list_name}_domains_filtered.tmp"
     comm -13 "$TEMP_DIR/remove-hosts.txt" "$temp_domains" &gt; "$temp_domains_filtered"
-    
+
     sed -E '/\..*\./ s/^(www[0-9]*|m|mobile|hd|static|[0-9]+)\.//' "$temp_domains_filtered" | \
     rev | sort -t '.' -k1,1 -k2,2 -k3,3 -k4,4 -k5,5 -k6,6 -k7,7 -k8,8 -k9,9 -k10,10 -k11,11 -k12,12 -k13,13 -k14,14 -k15,15 -k16,16 -k17,17 -k18,18 -k19,19 -k20,20 | \
     awk 'BEGIN { last = "" }
@@ -1033,15 +1153,15 @@ CUSTOM_TEMPLATE
         last = $0
         print $0
     }' | rev | sort -u &gt; "${target_file}.domains.tmp"
-    
+
     sort -u "$temp_ipv4" &gt; "${target_file}.ipv4.tmp"
     sort -u "$temp_ipv6" &gt; "${target_file}.ipv6.tmp"
-    
+
     rm -f "$temp_domains" "$temp_domains_filtered"
-    
+
     grep -vE '^[0-9]|^$' "${target_file}.domains.tmp" &gt; "${target_file}.domains.tmp.safe" 2&gt;/dev/null || true
     mv "${target_file}.domains.tmp.safe" "${target_file}.domains.tmp"
-    
+
     local domains_count=$(wc -l &lt; "${target_file}.domains.tmp" | tr -d ' ')
     local temp_current="$TEMP_DIR/${list_name}_current.tmp"
     if [[ -f "$target_file" ]]; then
@@ -1049,21 +1169,21 @@ CUSTOM_TEMPLATE
     else
         &gt; "$temp_current"
     fi
-    
+
     if diff -q "$temp_current" &lt;(cat "${target_file}.domains.tmp" "${target_file}.ipv4.tmp" "${target_file}.ipv6.tmp" | sort -u) &gt; /dev/null 2&gt;&amp;1; then
         log "${GREEN}✅ Списки $list_name идентичны. Обновление не требуется.${NC}"
         rm -f "${target_file}.domains.tmp" "${target_file}.ipv4.tmp" "${target_file}.ipv6.tmp" "$temp_current"
         return 0
     fi
-    
+
     local added=$(comm -13 "$temp_current" &lt;(cat "${target_file}.domains.tmp" "${target_file}.ipv4.tmp" "${target_file}.ipv6.tmp" | sort -u) | wc -l | tr -d ' ')
     local removed=$(comm -23 "$temp_current" &lt;(cat "${target_file}.domains.tmp" "${target_file}.ipv4.tmp" "${target_file}.ipv6.tmp" | sort -u) | wc -l | tr -d ' ')
     local total_combined=$(cat "${target_file}.domains.tmp" "${target_file}.ipv4.tmp" "${target_file}.ipv6.tmp" | sort -u | wc -l | tr -d ' ')
-    
+
     log "${YELLOW}📊 Обнаружены изменения ($list_name): +$added добавлено, -$removed удалено${NC}"
     log "${YELLOW}💾 Создание бэкапа текущего ${target_file} → ${backup_file}${NC}"
     [[ -f "$target_file" ]] &amp;&amp; cp "$target_file" "$backup_file"
-    
+
     echo "# === Автоматически сгенерированный список для $list_name (Optimized) ===" &gt; "$target_file"
     echo "# Обновлено: $(date '+%Y-%m-%d %H:%M:%S')" &gt;&gt; "$target_file"
     echo "" &gt;&gt; "$target_file"
@@ -1075,10 +1195,10 @@ CUSTOM_TEMPLATE
     echo "" &gt;&gt; "$target_file"
     echo "# --- IPv6 ---" &gt;&gt; "$target_file"
     cat "${target_file}.ipv6.tmp" &gt;&gt; "$target_file"
-    
+
     chown "$CURRENT_USER:$CURRENT_USER" "$target_file" 2&gt;/dev/null || true
     log "${GREEN}✅ ${target_file} обновлен (${total_combined} записей)${NC}"
-    
+
     rm -f "${target_file}.domains.tmp" "${target_file}.ipv4.tmp" "${target_file}.ipv6.tmp" "$temp_current"
     return 1
 }
@@ -1158,7 +1278,7 @@ systemctl daemon-reload &amp;&amp; systemctl enable --now amnezia-update-lists.t
             </section>
 
             <section id="reload">
-                <h2>🔄 8. Мастер-скрипт vpn-reload</h2>
+                <h2>🔄 11. Мастер-скрипт vpn-reload</h2>
                 <pre><code>CURRENT_USER=$(logname 2>/dev/null || whoami)
 AMNEZIA_DIR="/home/$CURRENT_USER/amnezia"
 
@@ -1189,7 +1309,7 @@ chmod +x /usr/local/bin/vpn-reload</code></pre>
             </section>
 
             <section id="routes">
-                <h2>🛣️ 9. Главный скрипт обновления маршрутов (MassDNS)</h2>
+                <h2>🛣️ 12. Главный скрипт обновления маршрутов (MassDNS)</h2>
                 <p>Использует massdns для молниеносного резолвинга и ipset restore для атомарной загрузки. Hashsize увеличен до 65536 для оптимальной производительности.</p>
                 <pre><code>CURRENT_USER=$(logname 2>/dev/null || whoami)
 AMNEZIA_DIR="/home/$CURRENT_USER/amnezia"
@@ -1259,32 +1379,32 @@ if [[ $FAST_MODE -eq 0 ]]; then
         ipset destroy $set 2&gt;/dev/null
         ipset create $set hash:net family inet6 hashsize 65536 maxelem 262144
     done
-    
+
     TMP_IPSET_CMD=$(mktemp)
-    
+
     process_config() {
         local conf_file="$1"
         local set_v4="$2"
         local set_v6="$3"
         local label="$4"
         local VERBOSE_RESOLVE=0
-        
+
         if [[ ! -f "$conf_file" ]]; then
             echo -e "${RED}❌ Файл $conf_file не найден!${NC}"
             return 1
         fi
-        
+
         echo "🌐 $label: Обработка конфигурации..."
-        
+
         local tmp_clean=$(mktemp)
         local tmp_static_v4=$(mktemp)
         local tmp_static_v6=$(mktemp)
         local tmp_domains_raw=$(mktemp)
         local tmp_domains_unique=$(mktemp)
         local tmp_resolved=$(mktemp)
-        
+
         sed 's/#.*//' "$conf_file" | tr -d '\r' &gt; "$tmp_clean"
-        
+
         awk -v v4="add $set_v4" -v v6="add $set_v6" '
         NF {
             item = $1
@@ -1299,28 +1419,28 @@ if [[ $FAST_MODE -eq 0 ]]; then
             }
         }
         ' "$tmp_clean" &gt; "$tmp_domains_raw" 2&gt; &gt;(cat &gt; "$tmp_static_combined.tmp")
-        
+
         grep "^add $set_v4 " "$tmp_static_combined.tmp" &gt; "$tmp_static_v4" 2&gt;/dev/null || true
         grep "^add $set_v6 " "$tmp_static_combined.tmp" &gt; "$tmp_static_v6" 2&gt;/dev/null || true
         rm -f "$tmp_static_combined.tmp"
-        
+
         local static_count=$(($(wc -l &lt; "$tmp_static_v4") + $(wc -l &lt; "$tmp_static_v6")))
         echo "  📌 Статических IP в очереди: $static_count"
-        
+
         sort -u "$tmp_domains_raw" &gt; "$tmp_domains_unique"
         local total_unique_domains=$(wc -l &lt; "$tmp_domains_unique" | tr -d ' ')
         echo "  🔄 Уникальных доменов для резолвинга: $total_unique_domains"
-        
+
         if [[ $total_unique_domains -gt 0 ]]; then
             echo "  ⚡ Запуск massdns (молниеносный режим)..."
             local tmp_resolvers=$(mktemp)
             echo "127.0.0.1" &gt; "$tmp_resolvers"
             echo "9.9.9.9" &gt;&gt; "$tmp_resolvers"
             echo "1.1.1.1" &gt;&gt; "$tmp_resolvers"
-            
+
             local tmp_resolved_raw=$(mktemp)
             massdns -r "$tmp_resolvers" -t A -t AAAA -o S -w "$tmp_resolved_raw" "$tmp_domains_unique" 2&gt;/dev/null
-            
+
             awk -v v4="add $set_v4" -v v6="add $set_v6" '
             / IN A / {
                 ip = $NF
@@ -1331,29 +1451,29 @@ if [[ $FAST_MODE -eq 0 ]]; then
                 print v6, ip
             }
             ' "$tmp_resolved_raw" &gt;&gt; "$tmp_resolved"
-            
+
             rm -f "$tmp_resolvers" "$tmp_resolved_raw"
             echo -e "  ${GREEN}✅ $label: Резолвинг завершен.${NC}"
         else
             echo "  ⏭️ Доменов для резолвинга нет."
         fi
-        
+
         cat "$tmp_static_v4" "$tmp_static_v6" "$tmp_resolved" | sort -u &gt;&gt; "$TMP_IPSET_CMD"
         rm -f "$tmp_clean" "$tmp_static_v4" "$tmp_static_v6" "$tmp_domains_raw" "$tmp_domains_unique" "$tmp_resolved"
     }
-    
+
     process_config "$CONF_VPN" "$TMP_VPN" "$TMP_VPN6" "VPN"
     process_config "$CONF_DIRECT" "$TMP_DIRECT" "$TMP_DIRECT6" "Direct"
-    
+
     if [[ -s "$TMP_IPSET_CMD" ]]; then
         echo "💾 Применяем изменения в ipset (массовая загрузка)..."
         ipset restore -exist &lt; "$TMP_IPSET_CMD" 2&gt;/dev/null
     else
         echo "⚠️ Список изменений пуст, массовая загрузка пропущена."
     fi
-    
+
     rm -f "$TMP_IPSET_CMD"
-    
+
     for name in $IPSET_VPN $IPSET_DIRECT; do
         tmp="${name}_tmp"
         if ipset list "$name" &gt;/dev/null 2&gt;&amp;1; then ipset swap "$tmp" "$name"; else ipset rename "$tmp" "$name"; fi
@@ -1362,7 +1482,7 @@ if [[ $FAST_MODE -eq 0 ]]; then
         tmp="${name}_tmp"
         if ipset list "$name" &gt;/dev/null 2&gt;&amp;1; then ipset swap "$tmp" "$name"; else ipset rename "$tmp" "$name"; fi
     done
-    
+
     ipset destroy $TMP_VPN 2&gt;/dev/null
     ipset destroy $TMP_DIRECT 2&gt;/dev/null
     ipset destroy $TMP_VPN6 2&gt;/dev/null
@@ -1430,12 +1550,12 @@ if ip link show awg-server2 &gt;/dev/null 2&gt;&amp;1; then
     iptables -t nat -D POSTROUTING -s 10.9.0.0/24 -o amnezia-client -j MASQUERADE 2&gt;/dev/null
     iptables -D FORWARD -i awg-server2 -o amnezia-client -j ACCEPT 2&gt;/dev/null
     iptables -D FORWARD -i amnezia-client -o awg-server2 -m state --state RELATED,ESTABLISHED -j ACCEPT 2&gt;/dev/null
-    
+
     iptables -t mangle -A PREROUTING -s 10.9.0.0/24 -j MARK --set-mark 0x2000
     iptables -t nat -A POSTROUTING -s 10.9.0.0/24 -o amnezia-client -j MASQUERADE
     iptables -I FORWARD 1 -i awg-server2 -o amnezia-client -j ACCEPT
     iptables -I FORWARD 2 -i amnezia-client -o awg-server2 -m state --state RELATED,ESTABLISHED -j ACCEPT
-    
+
     ip rule del fwmark 0x2000 table 200 2&gt;/dev/null || true
     ip rule add fwmark 0x2000 table 200
     echo "  ✅ awg-server2 восстановлен"
@@ -1448,7 +1568,7 @@ chmod +x "$AMNEZIA_DIR/update-vpn-routes.sh"</code></pre>
             </section>
 
             <section id="adguard">
-                <h2>🛡️ 10. [Опционально] AdGuard Home</h2>
+                <h2>🛡️ 13. [Опционально] AdGuard Home</h2>
                 <div class="card info">
                     <h3>Зачем это нужно?</h3>
                     <p>AdGuard Home превращает ваш VPS в мощный DNS-фильтр. Он будет блокировать рекламу, трекеры, телеметрию и фишинг для всех устройств, подключенных к вашему VPN.</p>
@@ -1463,12 +1583,12 @@ sudo chattr +i /etc/resolv.conf
 
 curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
 
-sudo firewall-cmd --add-port={53/tcp,53/udp,3000/tcp} --permanent
-sudo firewall-cmd --reload</code></pre>
+# ✅ БЕЗОПАСНОСТЬ: Не открывайте порты 53 и 3000 для 0.0.0.0/0!
+# Они уже защищены правилами firewalld из Раздела 5 (доступны только через VPN).</code></pre>
                 </div>
                 <div class="step">
                     <h3><span class="step-number">2</span>Первичная настройка через веб-интерфейс</h3>
-                    <p>Откройте браузер: <code>http://&lt;ПУБЛИЧНЫЙ_IP_VPS&gt;:3000</code></p>
+                    <p>Откройте браузер: <code>http://10.8.0.1:3000</code> (обязательно при включенном VPN!)</p>
                     <ul style="margin-left: 20px; margin-top: 10px;">
                         <li>Веб-интерфейс: Оставьте <code>0.0.0.0:3000</code></li>
                         <li>DNS-сервер: Укажите <code>0.0.0.0:53</code> (критически важно!)</li>
@@ -1537,15 +1657,17 @@ https://dns.surfsharkdns.com/dns-query
                     </ul>
                 </div>
                 <div class="step">
-                    <h3><span class="step-number">6</span>Финальная проверка и безопасность</h3>
+                    <h3><span class="step-number">6</span>Финальная проверка</h3>
                     <pre><code>sudo ss -tulpn | grep ':53 '
 dig @127.0.0.1 doubleclick.net +short
-sudo firewall-cmd --remove-port=3000/tcp --permanent &amp;&amp; sudo firewall-cmd --reload</code></pre>
+
+# ✅ Проверка безопасности: убедитесь, что порт 3000 НЕ доступен извне без VPN
+# firewall-cmd --list-all | grep 3000  # Должен показывать rich rules только для 10.8/10.9</code></pre>
                 </div>
             </section>
 
             <section id="zapret">
-                <h2>⚡ 11. [Опционально] Zapret 2 и Синхронизация</h2>
+                <h2>⚡ 14. [Опционально] Zapret 2 и Синхронизация</h2>
                 <div class="card info">
                     <h3>Зачем это нужно?</h3>
                     <p>Zapret обходит DPI (Deep Packet Inspection) — позволяет скрыть факт использования VPN от провайдера. Особенно полезно в режиме каскада.</p>
@@ -1654,7 +1776,7 @@ chown $CURRENT_USER:$CURRENT_USER "$AMNEZIA_DIR/sync-vpn-domains-to-zapret.sh"</
             </section>
 
             <section id="aliases">
-                <h2>⌨️ 12. Команды и алиасы</h2>
+                <h2>⌨️ 15. Команды и алиасы</h2>
                 <pre><code>CURRENT_USER=$(logname 2>/dev/null || whoami)
 AMNEZIA_DIR="/home/$CURRENT_USER/amnezia"
 
@@ -1690,6 +1812,10 @@ vpn-help() {
     echo -e "  \${YELLOW}edit-vpn\${NC}          vpn-domains.conf"
     echo -e "  \${YELLOW}edit-direct\${NC}       vpn-outside.conf"
     echo ""
+    echo -e "\${BOLD}\${GREEN}🔒 БЕЗОПАСНОСТЬ\${NC}"
+    echo -e "  \${YELLOW}firewall-check\${NC}    Проверить правила firewalld"
+    echo -e "  \${YELLOW}ip-rules\${NC}          Показать ip rules"
+    echo ""
 }
 
 alias help-vpn='vpn-help'
@@ -1711,13 +1837,17 @@ alias watchdog-logs='tail -n 30 $AMNEZIA_DIR/logs/vpn-watchdog*.log 2&gt;/dev/nu
 
 alias edit-vpn='nano $AMNEZIA_DIR/vpn-domains.conf'
 alias edit-direct='nano $AMNEZIA_DIR/vpn-outside.conf'
+
+# Команды безопасности
+alias firewall-check='firewall-cmd --list-all'
+alias ip-rules='ip rule show'
 EOF
 
 source /root/.bashrc</code></pre>
             </section>
 
             <section id="test">
-                <h2>✅ 13. Финальная проверка</h2>
+                <h2>✅ 16. Финальная проверка</h2>
                 <pre><code># 1. Применяем правила
 vpn-update
 
@@ -1733,10 +1863,16 @@ echo "Напрямую: $(curl -s ifconfig.me)"
 echo "Через VPN: $(curl -s --interface amnezia-client ifconfig.me)"
 
 # 5. Проверка синхронизации с Zapret (если установлен)
-zapret-sync</code></pre>
+zapret-sync
+
+# 6. 🔒 ПРОВЕРКА БЕЗОПАСНОСТИ
+echo ""
+echo "🔒 Проверка безопасности..."
+firewall-check
+ip-rules</code></pre>
                 <div class="card success">
                     <h3>🎉 Поздравляем!</h3>
-                    <p>Ваша система полностью настроена, защищена от потери доступа и оптимизирована для стабильной работы. Благодаря внедрению <code>massdns</code> и <code>idn2</code>, обработка сотен тысяч доменов теперь занимает минуты вместо часов.</p>
+                    <p>Ваша система полностью настроена, <strong>надежно защищена</strong> от потери доступа и оптимизирована для стабильной работы. Благодаря внедрению <code>massdns</code> и <code>idn2</code>, обработка сотен тысяч доменов теперь занимает минуты вместо часов.</p>
                 </div>
             </section>
         </main>
