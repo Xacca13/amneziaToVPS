@@ -12,7 +12,8 @@
 - **Smart Update v2.0** — автозагрузка списков с 3-уровневой фильтрацией
 - **massdns** — молниеносный резолвинг сотен тысяч доменов
 - **Watchdog** — автовосстановление связи каждую минуту
-- **Защита SSH** — ваш IP всегда имеет priority 1
+- **Защита SSH** — ваш IP всегда имеет priority 1 в ip rule
+- **🖥️ Веб-панель управления (Dashboard)** — мониторинг трафика с графиками, редактирование конфигов и запуск команд через красивый веб-интерфейс (Streamlit).
 
 ## 🚀 Быстрая установка
 
@@ -72,7 +73,8 @@ IP: 192.168.0.1
 🧠 Установить Smart Update (автообновление списков)? [y/n]: y
 🛡️  Установить AdGuard Home (DNS-фильтр)? [y/n]: y
 ⚡ Установить Zapret (обход DPI)? [y/n]: n
-✅ Smart Update: 1 | AdGuard: 1 | Zapret: 0
+🖥️  Установить Веб-панель управления (Dashboard)? [y/n]: y
+✅ Smart Update: 1 | AdGuard: 1 | Zapret: 0 | Dashboard: 1
 
 📋 ШАГ 4. Настройка списков маршрутизации:
 💡 Загрузка актуальных списков из репозитория...
@@ -121,6 +123,7 @@ IP: 192.168.0.1
   Smart Update:     ✅ Да
   AdGuard Home:     ✅ Да
   Zapret:           ❌ Нет
+  Dashboard:        ✅ Да
 ════════════════════════════════════════════════════════════════
 Начать установку? [y/n]: y
 
@@ -152,6 +155,7 @@ IP: 192.168.0.1
   4. Split конфиги (5 шт.): /home/user/amnezia/server-clients/client_01.conf ...
   5. Full конфиги (5 шт.): /home/user/amnezia/server-clients-full/client_01.conf ...
   6. AdGuard Home: http://192.168.0.1:3000 (закройте порт 3000 после настройки!)
+  7. Dashboard: http://10.8.0.1:8501 или http://10.9.0.1:8501 (только через VPN!)
 
   📖 Справка: vpn-help  |  📝 Лог: /var/log/amnezia-gateway-install.log
 ```
@@ -160,20 +164,23 @@ IP: 192.168.0.1
 amnezia-gateway/
 ├── install.sh                    # Главный интерактивный установщик
 ├── modules/                      # Модули установки
-│   ├── 00-base-system.sh         # Базовая подготовка
-│   ├── 01-amneziawg.sh           # AmneziaWG
+│   ├── 00-base-system.sh         # Базовая подготовка системы
+│   ├── 01-amneziawg.sh           # Установка AmneziaWG
 │   ├── 02-server-split.sh        # Split Tunneling сервер
 │   ├── 03-server-full.sh         # Full Tunnel сервер
 │   ├── 04-client-multi.sh        # Клиент с автопереключением
 │   ├── 05-client-cascade.sh      # Клиент для каскада
-│   ├── 06-lists-manager.sh       # Smart Update
-│   ├── 07-routes-updater.sh      # Обновление маршрутов
+│   ├── 06-lists-manager.sh       # Smart Update v2.0
+│   ├── 07-routes-updater.sh      # Главный скрипт обновления маршрутов
 │   ├── 08-adguard.sh             # AdGuard Home
 │   ├── 09-zapret.sh              # Zapret 2
-│   └── 10-aliases.sh             # Алиасы
-├── configs/urls/                 # Сборник ссылок на домены, адреса IPv4, IPv6
+│   ├── 10-aliases.sh             # Алиасы и полезные команды
+│   ├── 11-zapret-sync.sh         # Синхронизация списков с Zapret
+│   └── 12-dashboard.sh           # Веб-панель управления (Streamlit)
+├── configs/urls/                 # Сборник ссылок на домены и IP-адреса
 ├── docs/                         # Дополнительная документация
-│   └── AmneziaToVPSManual.html   # Гайд по ручной установке сервиса(с скриптами)
+│   └── AmneziaToVPSManual.html   # Подробный HTML-гайд по ручной установке
+└── README.md                     # Этот файл
 ```
 ## 📝 Лицензия
 MIT

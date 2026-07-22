@@ -147,11 +147,14 @@ select_optional() {
     read -p "$(echo -e ${CYAN}🧠 Установить Smart Update (автообновление списков)? [y/n]:${NC} )" OPT_SMART
     read -p "$(echo -e ${CYAN}🛡️  Установить AdGuard Home (DNS-фильтр)? [y/n]:${NC} )" OPT_ADGUARD
     read -p "$(echo -e ${CYAN}⚡ Установить Zapret (обход DPI)? [y/n]:${NC} )" OPT_ZAPRET
+    read -p "$(echo -e ${CYAN}🖥️  Установить Веб-панель управления (Dashboard)? [y/n]:${NC} )" OPT_DASHBOARD
     
     [[ "$OPT_SMART" =~ ^[Yy] ]] && INSTALL_SMART=1 || INSTALL_SMART=0
     [[ "$OPT_ADGUARD" =~ ^[Yy] ]] && INSTALL_ADGUARD=1 || INSTALL_ADGUARD=0
     [[ "$OPT_ZAPRET" =~ ^[Yy] ]] && INSTALL_ZAPRET=1 || INSTALL_ZAPRET=0
-    log_success "Smart Update: $INSTALL_SMART | AdGuard: $INSTALL_ADGUARD | Zapret: $INSTALL_ZAPRET"
+    [[ "$OPT_DASHBOARD" =~ ^[Yy] ]] && INSTALL_DASHBOARD=1 || INSTALL_DASHBOARD=0
+    
+    log_success "Smart: $INSTALL_SMART | AdGuard: $INSTALL_ADGUARD | Zapret: $INSTALL_ZAPRET | Dashboard: $INSTALL_DASHBOARD"
 }
 
 present_url_menu() {
@@ -276,6 +279,7 @@ show_summary() {
     echo -e "  ${BOLD}Smart Update:${NC}     $( [[ $INSTALL_SMART -eq 1 ]] && echo '✅ Да' || echo '❌ Нет' )"
     echo -e "  ${BOLD}AdGuard Home:${NC}     $( [[ $INSTALL_ADGUARD -eq 1 ]] && echo '✅ Да' || echo '❌ Нет' )"
     echo -e "  ${BOLD}Zapret:${NC}           $( [[ $INSTALL_ZAPRET -eq 1 ]] && echo '✅ Да' || echo '❌ Нет' )"
+    echo -e "  ${BOLD}Dashboard:${NC}        $( [[ $INSTALL_DASHBOARD -eq 1 ]] && echo '✅ Да' || echo '❌ Нет' )"
     echo -e "${BOLD}${CYAN}════════════════════════════════════════════════════════════════${NC}"
     read -p "$(echo -e ${YELLOW}Начать установку? [y/n]:${NC} )" -n 1 -r
     echo
@@ -313,8 +317,9 @@ main() {
     [[ $INSTALL_SMART -eq 1 ]] && MANDATORY_MODULES+=("06-lists-manager.sh")
     [[ $INSTALL_ADGUARD -eq 1 ]] && MANDATORY_MODULES+=("08-adguard.sh")
     [[ $INSTALL_ZAPRET -eq 1 ]] && MANDATORY_MODULES+=("09-zapret.sh")
+    [[ $INSTALL_DASHBOARD -eq 1 ]] && MANDATORY_MODULES+=("12-dashboard.sh") # <-- ДОБАВЛЕНО
     MANDATORY_MODULES+=("10-aliases.sh")
-    MANDATORY_MODULES+=("11-zapret-sync.sh") # Всегда добавляем, скрипт сам проверит наличие Zapret
+    MANDATORY_MODULES+=("11-zapret-sync.sh")
     
     for module in "${MANDATORY_MODULES[@]}"; do
         download_module "$module" || { log_error "Критическая ошибка: не удалось скачать $module"; exit 1; }
@@ -347,6 +352,7 @@ main() {
     
     [[ $INSTALL_ADGUARD -eq 1 ]] && { log_info "🔧 Модуль 08: AdGuard Home"; bash "$TEMP_DIR/modules/08-adguard.sh" 2>&1 | tee -a "$INSTALL_LOG"; }
     [[ $INSTALL_ZAPRET -eq 1 ]] && { log_info "🔧 Модуль 09: Zapret 2"; bash "$TEMP_DIR/modules/09-zapret.sh" 2>&1 | tee -a "$INSTALL_LOG"; }
+    [[ $INSTALL_DASHBOARD -eq 1 ]] && { log_info "🔧 Модуль 12: Веб-панель управления"; bash "$TEMP_DIR/modules/12-dashboard.sh" 2>&1 | tee -a "$INSTALL_LOG"; } # <-- ДОБАВЛЕНО
     
     log_info "🔧 Модуль 10: Алиасы и команды"
     bash "$TEMP_DIR/modules/10-aliases.sh" 2>&1 | tee -a "$INSTALL_LOG"
@@ -366,7 +372,7 @@ main() {
     echo "╚════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
     
-    echo -e "${BOLD}${CYAN}📋 Следующие шаги:${NC}"
+    echo -e "\n${BOLD}${CYAN}📋 Следующие шаги:${NC}"
     if [[ "$MODE_NAME" == "multi" ]]; then
         echo -e "  ${YELLOW}1.${NC} Загрузите конфиги провайдеров в: ${CYAN}$AMNEZIA_DIR/clients/${NC}"
         echo -e "  ${YELLOW}2.${NC} ⚠️  В каждом .conf: ${RED}Удалите${NC} ${CYAN}DNS = ...${NC} и ${GREEN}Добавьте${NC} ${CYAN}Table = off${NC}"
@@ -380,6 +386,7 @@ main() {
     [[ $INSTALL_SPLIT -eq 1 ]] && echo -e "  ${YELLOW}4.${NC} Split конфиги ($CLIENT_COUNT шт.): ${CYAN}$AMNEZIA_DIR/server-clients/client_01.conf ...${NC}"
     [[ $INSTALL_FULL -eq 1 ]] && echo -e "  ${YELLOW}5.${NC} Full конфиги ($CLIENT_COUNT шт.): ${CYAN}$AMNEZIA_DIR/server-clients-full/client_01.conf ...${NC}"
     [[ $INSTALL_ADGUARD -eq 1 ]] && echo -e "  ${YELLOW}6.${NC} AdGuard Home: ${CYAN}http://$PUBLIC_IP:3000${NC} (закройте порт 3000 после настройки!)"
+    [[ $INSTALL_DASHBOARD -eq 1 ]] && echo -e "  ${YELLOW}7.${NC} Dashboard: ${CYAN}http://10.8.0.1:8501${NC} или ${CYAN}http://10.9.0.1:8501${NC} (только через VPN!)" # <-- ДОБАВЛЕНО
     
     echo -e "\n  ${BOLD}📖 Справка:${NC} ${GREEN}vpn-help${NC}  |  ${BOLD}📝 Лог:${NC} ${CYAN}$INSTALL_LOG${NC}\n"
 }
