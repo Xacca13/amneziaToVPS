@@ -36,7 +36,7 @@ chmod +x install.sh
 Ниже показан пример вывода терминала при запуске интерактивного установщика:
 
 ```bash
-$ curl -sSL https://raw.githubusercontent.com/Xacca13/amnezia-gateway/main/install.sh | bash
+$ curl -sSL https://raw.githubusercontent.com/Xacca13/amneziaToVPS/main/install.sh | bash
 
 ╔════════════════════════════════════════════════════════════════╗
 ║                                                                ║
