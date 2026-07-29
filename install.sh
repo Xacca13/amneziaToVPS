@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-# 🚀 AmneziaWG Gateway — Интерактивный установщик (Только Каскад + dnsmasq)
+# 🚀 AmneziaWG Gateway — Интерактивный установщик
 # ==============================================================================
 set -e
 
@@ -83,7 +83,6 @@ get_public_ip() {
     detected_ip=$(curl -s --connect-timeout 3 ifconfig.me 2>/dev/null || echo 'не удалось определить')
     echo -e "${YELLOW}💡 Подсказка: ${NC}${detected_ip}"
     
-    # Безопасный ввод без вложенных $()
     read -p "${CYAN}IP: ${NC}" PUBLIC_IP
     [[ -z "$PUBLIC_IP" ]] && { log_error "IP не может быть пустым!"; exit 1; }
     log_success "Публичный IP: $PUBLIC_IP"
@@ -126,7 +125,6 @@ select_clients_count() {
 select_optional() {
     echo -e "\n${BOLD}${CYAN}🧩 ШАГ 2. Опциональные компоненты:${NC}"
     
-    # Безопасный ввод без вложенных $()
     read -p "${CYAN}🛡️  Установить AdGuard Home (DNS-фильтр + upstream для dnsmasq)? [y/n]: ${NC}" OPT_ADGUARD
     read -p "${CYAN}⚡ Установить Zapret (обход DPI)? [y/n]: ${NC}" OPT_ZAPRET
     read -p "${CYAN}🖥️  Установить Веб-панель управления (Dashboard)? [y/n]: ${NC}" OPT_DASHBOARD
@@ -232,7 +230,6 @@ EOF
 setup_cascade_config() {
     echo -e "\n${BOLD}${CYAN}🌉 Настройка каскада VPS-to-VPS:${NC}"
     
-    # Безопасный ввод без вложенных $()
     read -p "${CYAN}IP VPS_B (сервер-выход): ${NC}" VPS_B_IP
     read -p "${CYAN}Порт VPS_B [41820]: ${NC}" VPS_B_PORT
     VPS_B_PORT=${VPS_B_PORT:-41820}
@@ -241,7 +238,6 @@ setup_cascade_config() {
     log_info "📝 Команда: ${YELLOW}nano /etc/amnezia/amneziawg/amnezia-client.conf${NC}"
     log_info "📝 Endpoint: ${CYAN}${VPS_B_IP}:${VPS_B_PORT}${NC}"
     
-    # Безопасный ввод y/n (без флага -n 1, чтобы корректно съесть Enter)
     read -p "Продолжить установку? (y/n): " CONFIRM_CASCADE
     echo
     [[ ! "$CONFIRM_CASCADE" =~ ^[Yy]$ ]] && exit 1
@@ -261,7 +257,6 @@ show_summary() {
     echo -e "  ${BOLD}Dashboard:${NC}        $( [[ $INSTALL_DASHBOARD -eq 1 ]] && echo '✅ Да' || echo '❌ Нет' )"
     echo -e "${BOLD}${CYAN}════════════════════════════════════════════════════════════════${NC}"
     
-    # Безопасный ввод y/n (без флага -n 1)
     read -p "${YELLOW}Начать установку? [y/n]: ${NC}" CONFIRM_INSTALL
     echo
     [[ ! "$CONFIRM_INSTALL" =~ ^[Yy]$ ]] && { log_info "Установка отменена"; exit 0; }
@@ -285,7 +280,6 @@ main() {
 
     echo -e "\n${BOLD}${CYAN}📥 Скачивание модулей из GitHub...${NC}"
 
-    # ТОЛЬКО необходимые модули для каскада (мульти-конфиги удалены)
     MANDATORY_MODULES=(
         "00-base-system.sh"
         "01-amneziawg.sh"
