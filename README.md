@@ -18,9 +18,9 @@
 ## 🚀 Быстрая установка
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/Xacca13/amnezia-gateway/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/Xacca13/amneziaToVPS/main/install.sh | bash
 Или клонирование репозитория:
-git clone https://github.com/Xacca13/amnezia-gateway.git
+git clone https://github.com/Xacca13/amneziaToVPS.git
 cd amnezia-gateway
 chmod +x install.sh
 ./install.sh
