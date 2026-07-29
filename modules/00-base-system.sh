@@ -11,31 +11,31 @@ dnf update -y
 log "📦 Установка базовых пакетов..."
 dnf install -y epel-release dnf-plugins-core git curl wget bind-utils \
     iputils ipset iptables iproute jq cronie make gcc pkgconfig tcpdump idn2 \
-    nano vim-enhanced htop
-
+    nano vim-enhanced htop dnsmasq
 dnf config-manager --set-enabled crb
 
-log "🌐 Настройка DNS (исправление медленного резолвинга)..."
+log "🌐 Настройка DNS..."
 chattr -i /etc/resolv.conf 2>/dev/null || true
 cat > /etc/resolv.conf << 'EOF'
 nameserver 9.9.9.10
+nameserver 1.1.1.1
 nameserver 76.76.2.0
 nameserver 194.169.169.169
 nameserver 64.6.64.6
 nameserver 64.6.65.6
 nameserver 101.226.4.6
 nameserver 193.58.251.251
-nameserver 1.1.1.1
-options timeout:1 attempts:1 rotate inet4
+options timeout:2 attempts:2 rotate inet4
 EOF
 chattr +i /etc/resolv.conf
-
 sed -i 's/^hosts:.*$/hosts:      files dns/' /etc/nsswitch.conf
-systemctl restart systemd-resolved 2>/dev/null || true
+systemctl stop systemd-resolved 2>/dev/null || true
+systemctl disable systemd-resolved 2>/dev/null || true
 
 log "📁 Создание структуры директорий..."
 mkdir -p "$AMNEZIA_DIR"/{clients,server-clients,server-clients-full,lists,logs}
 mkdir -p /etc/amnezia/amneziawg
+mkdir -p /etc/dnsmasq.d
 chown -R "$CURRENT_USER:$CURRENT_USER" "$AMNEZIA_DIR" 2>/dev/null || true
 
 log "⚙️  Настройка системных параметров..."
@@ -46,16 +46,4 @@ net.ipv4.conf.default.rp_filter=2
 EOF
 sysctl -p /etc/sysctl.d/99-ipforward.conf
 
-log "⚡ Установка massdns (сверхбыстрый резолвинг)..."
-cd /tmp
-if [[ ! -d massdns ]]; then
-    git clone https://github.com/blechschmidt/massdns.git
-fi
-cd massdns
-make clean 2>/dev/null || true
-make
-cp bin/massdns /usr/local/bin/
-chmod +x /usr/local/bin/massdns
-restorecon -v /usr/local/bin/massdns 2>/dev/null || true
-
-log "✅ massdns установлен: $(massdns --version 2>&1 | head -1)"
+log "✅ Базовая подготовка завершена (dnsmasq установлен, massdns не требуется)"
