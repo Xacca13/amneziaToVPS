@@ -4,7 +4,7 @@
 # ==============================================================================
 set -e
 
-REPO_URL="https://raw.githubusercontent.com/Xacca13/amnezia-gateway/main"
+REPO_URL="https://raw.githubusercontent.com/Xacca13/amneziaToVPS/main"
 MODULES_URL="$REPO_URL/modules"
 CONFIGS_URL="$REPO_URL/configs/urls"
 CURRENT_USER=$(logname 2>/dev/null || whoami)
