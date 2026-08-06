@@ -1,4 +1,0 @@
-# Формат: Описание|URL
-
-AntiZapret: exclude-hosts.txt|https://github.com/GubernievS/AntiZapret-VPN/raw/refs/heads/main/setup/root/antizapret/download/exclude-hosts.txt
-Itdoginfo: outside-kvas.lst (РФ ресурсы)|https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Russia/outside-kvas.lst
